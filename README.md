@@ -1,4 +1,17 @@
-# New Project
+# Better React Spreadsheet
+
+This is a work in progress spreadsheet component for React. 
+
+Project goals:
+- ⚡ Fully virtualized (rows and columns)
+- ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
+- 🏢 Modern architecture (React function components)
+- 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
+- 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
+
+This is still in its early stages, and isn't ready to use in production. 
+
+# Snowpack info
 
 > ✨ Bootstrapped with Create Snowpack App (CSA).
 
