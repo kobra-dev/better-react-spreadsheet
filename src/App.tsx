@@ -1,41 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
+import Spreadsheet from "./Spreadsheet";
 
-interface AppProps {}
+const getMuiTheme = (isDark: boolean) =>
+    createMuiTheme({
+        palette: {
+            type: isDark ? "dark" : "light",
+            primary: { main: "#42ad66", contrastText: "#ffffff" },
+            secondary: { main: "#76e094", contrastText: "#000000" }
+        }
+    });
 
-function App({}: AppProps) {
-  // Create the count state.
-  const [count, setCount] = useState(0);
-  // Create the counter (+1 every second).
-  useEffect(() => {
-    const timer = setTimeout(() => setCount(count + 1), 1000);
-    return () => clearTimeout(timer);
-  }, [count, setCount]);
-  // Return the App component.
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <p>
-          Page has been open for <code>{count}</code> seconds.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </p>
-      </header>
-    </div>
-  );
+const useStyles = makeStyles((theme) => ({
+    spreadsheet: {
+        height: "400px",
+        width: "600px"
+    }
+}));
+
+export default function App() {
+    const styles = useStyles();
+    return (
+        <div className="App">
+            <ThemeProvider theme={getMuiTheme(false)}>
+                <Spreadsheet className={styles.spreadsheet} w={100} h={100} />
+            </ThemeProvider>
+        </div>
+    );
 }
-
-export default App;
