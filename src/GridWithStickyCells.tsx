@@ -1,5 +1,5 @@
-import React from "react";
-import { FixedSizeGrid as Grid, FixedSizeGridProps } from "react-window";
+import React, { ForwardRefRenderFunction } from "react";
+import { FixedSizeGrid, FixedSizeGrid as Grid, FixedSizeGridProps } from "react-window";
 
 function getCellIndices(child: any) {
     return { row: child.props.rowIndex, column: child.props.columnIndex };
@@ -120,6 +120,7 @@ function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number) 
                                 left: 0,
                                 zIndex: 99998,
                                 display: "flex",
+                                justifyContent: "center",
                                 maxWidth: columnWidth + "px"
                             }
                         })
@@ -137,15 +138,16 @@ function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number) 
     );
 }
 
-export function GridWithStickyCells<T>(props: FixedSizeGridProps<T>) {
-    return (
-        <Grid
-            {...props}
-            innerElementType={useInnerElementType(
-                props.children,
-                props.columnWidth,
-                props.rowHeight
-            )}
-        />
-    );
-}
+const GridWithStickyCellsForwardRef: ForwardRefRenderFunction<FixedSizeGrid, FixedSizeGridProps> = (props, ref) => (
+    <Grid
+        ref={ref}
+        {...props}
+        innerElementType={useInnerElementType(
+            props.children,
+            props.columnWidth,
+            props.rowHeight
+        )}
+    />
+);
+
+export const GridWithStickyCells = React.forwardRef(GridWithStickyCellsForwardRef);

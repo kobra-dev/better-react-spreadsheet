@@ -14,6 +14,7 @@ import React, {
     useState,
     useRef,
     CSSProperties,
+    useEffect,
 } from "react";
 import { GridWithStickyCells } from "./GridWithStickyCells";
 
@@ -127,7 +128,8 @@ export default function Spreadsheet(props: {
         return globalThis._better_react_spreadsheet_counter;
     });
     const tableContainerRef = useRef<HTMLDivElement>(null);
-    const [selected, setSelected] = useState<Coords>([0, 0]);
+    const windowRef = useRef<FixedSizeGrid<string[][]>>(null);
+    const [selected, setSelected_state] = useState<Coords>([0, 0]);
     const [editing, setEditing] =
         useState<{ c: Coords; w: number } | undefined>(undefined);
     const [editorValue, setEditorValue] = useState("");
@@ -136,6 +138,21 @@ export default function Spreadsheet(props: {
 
     const getCellId = (row: number, col: number) =>
         `better-react-spreadsheet-${tableId}-${row}-${col}`;
+    
+    const setSelected = (c: Coords) => {
+        setSelected_state(c);
+        windowRef.current?.scrollToItem({
+            // Not sure why the addition is necessary but it is
+            rowIndex: c[0] + (selected[0] < c[0] ? 1 : 0),
+            columnIndex: c[1] + (selected[1] < c[1] ? 1 : 0)
+        });
+    };
+    
+    useEffect(() => {
+        console.log("scroll to: " + selected.toString());
+        console.log(document.getElementById(getCellId(...selected)));
+        windowRef.current?.scrollToItem({ rowIndex: selected[0], columnIndex: selected[1] });
+    }, selected);
 
     const processVirtualStyles = (
         style: CSSProperties,
@@ -479,6 +496,7 @@ export default function Spreadsheet(props: {
                 <AutoSizer>
                     {({ height, width }) => (
                         <GridWithStickyCells
+                            ref={windowRef}
                             height={300}
                             rowCount={data.length + 1}
                             columnCount={data[0].length + 1}
