@@ -99,6 +99,8 @@ const useStyles = makeStyles<Theme, { editingWidth: number }>((theme) => ({
     }
 }));
 
+const ZERO_WIDTH_SPACE = "​";
+
 const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 const numberToAlphabet = (i: number) =>
@@ -413,7 +415,7 @@ export default function Spreadsheet(props: {
                         >
                             {item === ""
                                 ? // Zero-width space to make sure the cell height is correct
-                                  "​"
+                                ZERO_WIDTH_SPACE
                                 : item}
                         </TableCell>
                     </>
@@ -433,7 +435,8 @@ export default function Spreadsheet(props: {
                 <TableCell
                     style={processVirtualStyles(style)}
                     className={headerCell(false)}
-                />
+                // Fix for weird positioning bug
+                >{ZERO_WIDTH_SPACE}</TableCell>
             ) : (
                 <TableCell
                     style={processVirtualStyles(style)}
