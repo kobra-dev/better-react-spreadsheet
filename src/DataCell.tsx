@@ -107,7 +107,6 @@ export default function DataCellRenderer(props: {
     col: number;
     isScrolling: boolean;
 }) {
-    console.log(`cell render: ${props.row},${props.col}`);
     const { style, item, row, col, isScrolling } = props;
     const styles = useStyles();
     const enterEditing = useEnterEditing();

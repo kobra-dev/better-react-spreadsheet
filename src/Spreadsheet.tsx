@@ -1,4 +1,4 @@
-import { Table, TableBody, makeStyles } from "@material-ui/core";
+import { Table, makeStyles } from "@material-ui/core";
 import type { FixedSizeGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 

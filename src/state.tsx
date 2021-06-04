@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { CELL_UNIT_WIDTH } from "./Cell";
-import {
+import type {
     Coords,
     Editing
 } from "./Spreadsheet";

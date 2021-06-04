@@ -140,7 +140,7 @@ function DataCellWrapper({
         newStyle.zIndex = indexFromEnd;
 
         return newStyle;
-    }, [style, isSelected]);
+    }, [style, isSelected, [...data[row]]]);
 
     return (
         <DataCellRenderer
