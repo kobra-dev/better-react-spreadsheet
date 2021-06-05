@@ -1,38 +1,66 @@
 # Better React Spreadsheet
 
-This is a work in progress spreadsheet component for React. 
+A better spreadsheet widget for React (currently in active development)
 
 Project goals:
-- ⚡ Fully virtualized (rows and columns)
-- ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
-- 🏢 Modern architecture (React function components)
-- 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
-- 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
+[x] ⚡ Fully virtualized (rows and columns)
+[x] ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
+[x] 🏢 Modern architecture (React function components)
+[ ] 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
+[x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
 
-This is still in its early stages, and isn't ready to use in production. 
+## Usage
 
-# Snowpack info
+```tsx
+import React, { useState } from "react";
+import Spreadsheet from "@kobra-dev/better-react-spreadsheet";
 
-> ✨ Bootstrapped with Create Snowpack App (CSA).
+function MyComponent() {
+    const [data, setData] = useState([
+        [1, 2, 3, 4, 5],
+        [6, 7, 8, 9, 10],
+        [11, 12, 13, 14, 15]
+    ]);
 
-## Available Scripts
+    return (
+        <Spreadsheet data={data} onChange={setData}/>
+    );
+}
+```
 
-### npm start
+### Props
+- `data: string[][]`: Source for data, formatted as a 2D array of strings
+- `onChange(newData: string[][]): void`: Function to call to update `data` array
+- `className?: string`: Optional class name to apply to the outermost `div` element of the spreadsheet
 
-Runs the app in the development mode.
-Open http://localhost:8080 to view it in the browser.
+### Customizing theme
+Better React Spreadsheet uses Material-UI internally, so you can use a `ThemeProvider` to change the color scheme of the table (for example, to add dark mode):
 
-The page will reload if you make edits.
-You will also see any lint errors in the console.
+```tsx
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 
-### npm run build
 
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
+// Kobra's MUI theme
+const getMuiTheme = (isDark: boolean) =>
+    createMuiTheme({
+        palette: {
+            type: isDark ? "dark" : "light",
+            primary: { main: "#42ad66", contrastText: "#ffffff" },
+            secondary: { main: "#76e094", contrastText: "#000000" }
+        }
+    });
 
-**For the best production performance:** Add a build bundler plugin like "@snowpack/plugin-webpack" to your `snowpack.config.js` config file.
+export default function App() {
+    const isDark = /* get dark theme status */;
 
-### npm test
+    return (
+        <ThemeProvider theme={getMuiTheme(isDark)}>
+            {/* the rest of your app */}
+        </ThemeProvider>
+    );
+}
+```
 
-Launches the application test runner.
-Run with the `--watch` flag (`npm test -- --watch`) to run in interactive watch mode.
+## Showcase
+
+We're currently working on integrating Better React Spreadsheet into [Kobra](https://kobra.dev); we'll update this page when that's complete. If you develop (or know of) a project using Better React Spreadsheet, feel free to submit an issue or PR and we'll add you to this section.

@@ -35,18 +35,14 @@ if (!globalThis._better_react_spreadsheet_counter) {
     globalThis._better_react_spreadsheet_counter = 0;
 }
 
+// TODO: add minwidth and minheight props
 export interface SpreadsheetProps {
+    data: string[][];
+    onChange(data: string[][]): void;
     className?: string;
-    w: number;
-    h: number;
 }
 
 export default function Spreadsheet(props: SpreadsheetProps) {
-    const [data, setData] = useState(() =>
-        Array.from({ length: props.h }, (_, i) =>
-            Array.from({ length: props.w }, (_, i) => i.toString())
-        )
-    );
     const [tableId] = useState(() => {
         globalThis._better_react_spreadsheet_counter++;
         return globalThis._better_react_spreadsheet_counter;
@@ -80,8 +76,8 @@ export default function Spreadsheet(props: SpreadsheetProps) {
     return (
         <StateProvider
             contexts={[
-                [DataContext, data],
-                [SetDataContext, setData],
+                [DataContext, props.data],
+                [SetDataContext, props.onChange],
                 [SelectedContext, selected],
                 [SetSelectedContext, setSelected],
                 [EditingContext, editing],
@@ -103,9 +99,10 @@ export default function Spreadsheet(props: SpreadsheetProps) {
                         {({ height, width }) => (
                             <GridWithStickyCells
                                 ref={windowRef}
-                                height={300}
-                                rowCount={data.length + 1}
-                                columnCount={data[0].length + 1}
+                                height={height}
+                                rowCount={props.data.length + 1}
+                                // TODO: calculate based on longest row
+                                columnCount={props.data[0].length + 1}
                                 rowHeight={28}
                                 columnWidth={CELL_UNIT_WIDTH}
                                 width={width}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
 import Spreadsheet from "./Spreadsheet";
 
@@ -13,17 +13,22 @@ const getMuiTheme = (isDark: boolean) =>
 
 const useStyles = makeStyles((theme) => ({
     spreadsheet: {
-        height: "400px",
+        height: "300px",
         width: "600px"
     }
 }));
 
 export default function App() {
     const styles = useStyles();
+    const [data, setData] = useState(() =>
+        Array.from({ length: 100 }, (_, i) =>
+            Array.from({ length: 100 }, (_, i) => i.toString())
+        )
+    );
     return (
         <div className="App">
             <ThemeProvider theme={getMuiTheme(false)}>
-                <Spreadsheet className={styles.spreadsheet} w={100} h={100} />
+                <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} />
             </ThemeProvider>
         </div>
     );
