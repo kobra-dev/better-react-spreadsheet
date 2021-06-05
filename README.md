@@ -3,11 +3,11 @@
 A better spreadsheet widget for React (currently in active development)
 
 Project goals:
-[x] ⚡ Fully virtualized (rows and columns)
-[x] ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
-[x] 🏢 Modern architecture (React function components)
-[ ] 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
-[x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
+- [x] ⚡ Fully virtualized (rows and columns)
+- [x] ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
+- [x] 🏢 Modern architecture (React function components)
+- [ ] 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
+- [x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
 
 ## Usage
 
