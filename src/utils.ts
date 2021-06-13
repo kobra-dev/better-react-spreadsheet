@@ -42,3 +42,22 @@ export function normalizeCSV(csv: string, minWidth: number, minHeight: number) {
 
     return result;
 }
+
+/**
+ * Convert a data array to CSV format
+ * @param data A 2D data array to convert to CSV format
+ * @param trim If true, remove all empty cells at the end of each row
+ */
+export function dataToCSV(data: string[][], trim: boolean) {
+    const newData = data.map(row => row.slice());
+
+    if(trim) {
+        for(const row of newData) {
+            for(let i = row.length - 1; i >= 0 && row[i].trim().length === 0; i--) {
+                row.pop();
+            }
+        }
+    }
+
+    return Papa.unparse(newData);
+}

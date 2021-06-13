@@ -1,7 +1,12 @@
 import React, { useRef, useState } from "react";
-import { Button, createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
+import {
+    Button,
+    createMuiTheme,
+    makeStyles,
+    ThemeProvider
+} from "@material-ui/core";
 import Spreadsheet from "./Spreadsheet";
-import { normalizeCSV } from "./utils";
+import { dataToCSV, normalizeCSV } from "./utils";
 
 const getMuiTheme = (isDark: boolean) =>
     createMuiTheme({
@@ -27,14 +32,15 @@ export default function App() {
         )
     );
     const inputRef = useRef<HTMLInputElement>(null);
+    const [csv, setCsv] = useState("");
 
     function loadFile() {
         const file = inputRef.current?.files?.[0];
-        if(!file) return;
+        if (!file) return;
         const fileReader = new FileReader();
         fileReader.onloadend = () => {
             const content = fileReader.result;
-            if(typeof content === "string") {
+            if (typeof content === "string") {
                 setData(normalizeCSV(content, 20, 20).data);
             }
         };
@@ -45,9 +51,17 @@ export default function App() {
     return (
         <div className="App">
             <ThemeProvider theme={getMuiTheme(false)}>
-                <input type="file" ref={inputRef}/>
+                <input type="file" ref={inputRef} />
                 <Button onClick={loadFile}>Load file</Button>
-                <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} />
+                <Spreadsheet
+                    className={styles.spreadsheet}
+                    data={data}
+                    onChange={setData}
+                />
+                <Button onClick={() => setCsv(dataToCSV(data, true))}>
+                    Export CSV
+                </Button>
+                <code><pre>{csv}</pre></code>
             </ThemeProvider>
         </div>
     );
