@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
+import React, { useRef, useState } from "react";
+import { Button, createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
 import Spreadsheet from "./Spreadsheet";
+import { normalizeCSV } from "./utils";
 
 const getMuiTheme = (isDark: boolean) =>
     createMuiTheme({
@@ -25,9 +26,27 @@ export default function App() {
             Array.from({ length: 100 }, (_, i) => i.toString())
         )
     );
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    function loadFile() {
+        const file = inputRef.current?.files?.[0];
+        if(!file) return;
+        const fileReader = new FileReader();
+        fileReader.onloadend = () => {
+            const content = fileReader.result;
+            if(typeof content === "string") {
+                setData(normalizeCSV(content, 20, 20).data);
+            }
+        };
+
+        fileReader.readAsText(file);
+    }
+
     return (
         <div className="App">
             <ThemeProvider theme={getMuiTheme(false)}>
+                <input type="file" ref={inputRef}/>
+                <Button onClick={loadFile}>Load file</Button>
                 <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} />
             </ThemeProvider>
         </div>

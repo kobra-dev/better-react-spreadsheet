@@ -98,50 +98,7 @@ export default function Spreadsheet(props: SpreadsheetProps) {
                 };
                 
                 container.scrollTo(scrollToOptions);
-
-                /*container.scrollTo({
-                    top: (
-                        element.offsetTop 
-                    ),
-                    left: (
-                        
-                    )
-                })*/
-
-                //const sL = container.scrollLeft;
-                //const sT = container.scrollTop;
-                // Need to scroll to the element to be able to see it
-                /*windowRef.current?.scrollToItem({
-                    // Not sure why the addition is necessary but it is
-                    rowIndex: c[0] + (selected[0] < c[0] ? 1 : 0) + (isLastRow ? 1 : 0),
-                    columnIndex: c[1] + (selected[1] < c[1] ? 1 : 0)
-                });*/
-
-                // There's a weird glitch where using scrollToItem with an item in the last column or row won't
-                // account for the scrollbar width/height, which is odd since the demo does seem to account for it.
-                // So, we have to use the DOM's scrollIntoView function to make sure the element is fully visible.
-                // However, we need to wait until react-window does its scrolling.
-
-                /*window.requestAnimationFrame(() => {
-                    // TODO
-                    setTimeout(() => {
-                    // If element was null we need to refetch it
-                    const newElement = element ?? getElement();
-                    if(!newElement) throw new Error("Selected cell still doesn't exist on page");
-                    if(!isFullyVisible(container, newElement)) newElement.scrollIntoView();
-                    }, 500);
-                });*/
             }
-            
-            // TODO
-            /*const isLastCol = c[1] === props.data[0].length - 1;
-            if(isLastRow || isLastCol) {
-
-                // Run code after the react-window scroll occurs
-                window.requestAnimationFrame(() => {
-                    element?.scrollIntoViewIfNeeded();
-                })                
-            }*/
             //#endregion
         },
         [setSelected_state, windowRef, selected]
