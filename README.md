@@ -6,7 +6,11 @@ Project goals:
 - [x] ⚡ Fully virtualized (rows and columns)
 - [x] ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
 - [x] 🏢 Modern architecture (React function components)
-- [ ] 📊 Easy dataset creation and editing (selection of multiple cells, insert rows/columns, drag-to-autocomplete like in a spreadsheet)
+- [ ] 📊 Easy dataset creation and editing
+    - [ ] Selection of multiple cells
+    - [ ] Insert rows
+    - [ ] Insert columns
+    - [ ] Drag-to-autocomplete like in a spreadsheet
 - [x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
 
 ## Usage
@@ -28,10 +32,42 @@ function MyComponent() {
 }
 ```
 
+If you have data where different rows have different numbers of cells, you'll need to pass it to `normalizeRows` first:
+
+```js
+const newData = normalizeRows(data, /* minWidth */ 20, /* minHeight */ 20);
+```
+
+This will also make sure that the array is at least 20 columns by 20 rows by adding empty cells to any row that is less than the minimum, and adding empty rows until the number of rows is equal to the minimum specified. If you don't want any minimum width or height, just set both to 0.
+
+Be warned that `normalizeRows` mutates the data array that is passed to it as a parameter. If you do not want this behavior, use the `cloneDataArray` function:
+
+```js
+const newData = normalizeRows(cloneDataArray(data), 20, 20);
+```
+
 ### Props
 - `data: string[][]`: Source for data, formatted as a 2D array of strings
 - `onChange(newData: string[][]): void`: Function to call to update `data` array
 - `className?: string`: Optional class name to apply to the outermost `div` element of the spreadsheet
+
+### Working with CSVs
+
+To load a CSV, use the `parseCSV` function (a wrapper around [Papa Parse](https://www.papaparse.com/)):
+```js
+const parseResult = parseCSV(csv);
+if(parseResult.errors.length > 0) {
+    // Handle errors
+}
+const data = normalizeRows(parseResult.data, 20, 20);
+```
+
+You can also convert a data array back to a CSV string:
+```js
+const csv = dataToCSV(data, /* trim */ true);
+```
+
+If the `trim` parameter is set to `true`, all empty cells at the end of each row will be removed in the resulting CSV.
 
 ### Customizing theme
 Better React Spreadsheet uses Material-UI internally, so you can use a `ThemeProvider` to change the color scheme of the table (for example, to add dark mode):

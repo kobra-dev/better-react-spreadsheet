@@ -11,36 +11,47 @@ export function isFullyVisible(container: Element, elem: HTMLElement) {
         elem.offsetLeft <= container.scrollLeft + container.clientWidth - bcr.width;
 }
 
+export function cloneDataArray(data: string[][]) {
+    return data.map(row => row.slice());
+}
+
 /**
- * Parse and normalize a CSV file to load into the spreadsheet component
- * @param csv The text of a CSV file to parse
+ * Normalize a data array to load into the spreadsheet component
+ * @param data A data array to normalize
  * @param minWidth The minimum number of columns to display in the spreadsheet
  * @param minHeight The minimum number of rows to display in the spreadsheet
- * @returns A Papa Parse results object with the data (to pass into the spreadsheet component) and errors encountered while parsing
+ * @returns A normalized (all rows are the same length) data array
  */
-export function normalizeCSV(csv: string, minWidth: number, minHeight: number) {
-    const result = Papa.parse<string[]>(csv);
-    
+export function normalizeRows(data: string[][], minWidth: number, minHeight: number) {
     // The spreadsheet requires that all rows have the same number of cells
     // Find the longest row
     let max = 0;
-    for(const row of result.data) {
+    for(const row of data) {
         if(row.length > max) max = row.length;
     }
 
     max = Math.max(max, minWidth);
     // Make all rows the same length
-    for(const row of result.data) {
+    for(const row of data) {
         for(let i = row.length; i < max; i++) {
             row.push("");
         }
     }
 
-    for(let i = result.data.length; i < minHeight; i++) {
-        result.data.push(Array(max).fill(""));
+    for(let i = data.length; i < minHeight; i++) {
+        data.push(Array(max).fill(""));
     }
 
-    return result;
+    return data;
+}
+
+/**
+ * Parse a CSV file into a data array
+ * @param csv The text of a CSV file to parse
+ * @returns A Papa Parse results object with the data (to pass into the spreadsheet component) and errors encountered while parsing
+ */
+export function parseCSV(csv: string) {
+    return Papa.parse<string[]>(csv);
 }
 
 /**
@@ -49,7 +60,7 @@ export function normalizeCSV(csv: string, minWidth: number, minHeight: number) {
  * @param trim If true, remove all empty cells at the end of each row
  */
 export function dataToCSV(data: string[][], trim: boolean) {
-    const newData = data.map(row => row.slice());
+    const newData = cloneDataArray(data);
 
     if(trim) {
         for(const row of newData) {

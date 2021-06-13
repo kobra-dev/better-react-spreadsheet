@@ -6,7 +6,7 @@ import {
     ThemeProvider
 } from "@material-ui/core";
 import Spreadsheet from "./Spreadsheet";
-import { dataToCSV, normalizeCSV } from "./utils";
+import { dataToCSV, normalizeRows, parseCSV } from "./utils";
 
 const getMuiTheme = (isDark: boolean) =>
     createMuiTheme({
@@ -27,9 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export default function App() {
     const styles = useStyles();
     const [data, setData] = useState(() =>
-        Array.from({ length: 100 }, (_, i) =>
-            Array.from({ length: 100 }, (_, i) => i.toString())
-        )
+        normalizeRows([], 20, 20)
     );
     const inputRef = useRef<HTMLInputElement>(null);
     const [csv, setCsv] = useState("");
@@ -41,7 +39,7 @@ export default function App() {
         fileReader.onloadend = () => {
             const content = fileReader.result;
             if (typeof content === "string") {
-                setData(normalizeCSV(content, 20, 20).data);
+                setData(normalizeRows(parseCSV(content).data, 20, 20));
             }
         };
 
