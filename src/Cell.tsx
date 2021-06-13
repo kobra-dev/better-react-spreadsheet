@@ -3,9 +3,10 @@ import type { CSSProperties as MuiCSSProperties } from "@material-ui/styles";
 import React, { CSSProperties, useContext, useMemo } from "react";
 import type { GridChildComponentProps } from "react-window";
 import DataCellRenderer from "./DataCell";
+import RowAdder from "./RowAdder";
 import { DataContext, SelectedContext } from "./state";
 
-const CELL_BORDER_COLOR = "rgb(231, 231, 231)";
+export const CELL_BORDER_COLOR = "rgb(231, 231, 231)";
 
 export const CELL_UNIT_WIDTH = 74;
 export const CELL_UNIT_HEIGHT = 28;
@@ -27,11 +28,13 @@ export const cellStyles: MuiCSSProperties = {
     borderLeft: "1px solid " + CELL_BORDER_COLOR
 };
 
+export const HEADER_CELL_BG = "#dedede";
+
 const useStyles = makeStyles((theme) => ({
     cell: cellStyles,
     headerCell: {
         textAlign: "center",
-        backgroundColor: "#dedede",
+        backgroundColor: HEADER_CELL_BG,
         cursor: "initial"
     },
     selectedHeaderCell: {
@@ -60,8 +63,9 @@ export default function CellRenderer({
     columnIndex,
     rowIndex,
     style,
-    isScrolling
-}: GridChildComponentProps<string[][]>) {
+    isScrolling,
+    data: nRows
+}: GridChildComponentProps<number>) {
     const selected = useContext(SelectedContext);
     const styles = useStyles();
 
@@ -88,6 +92,10 @@ export default function CellRenderer({
                 {numberToAlphabet(columnIndex - 1)}
             </TableCell>
         )
+    ) : rowIndex === nRows + 1 ? (
+        columnIndex === 0 ? (
+            <RowAdder style={style} />
+        ) : null
     ) : columnIndex === 0 ? (
         <TableCell
             style={processVirtualStyles(style)}

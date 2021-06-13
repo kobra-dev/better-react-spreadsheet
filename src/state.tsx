@@ -55,8 +55,10 @@ export function StateProvider(props: {
     );
 }
 
+export const ID_BASE = "better-react-spreadsheet";
+
 export const getCellIdTableId = (tableId: number, row: number, col: number) =>
-    `better-react-spreadsheet-${tableId}-${row}-${col}`;
+    `${ID_BASE}-${tableId}-${row}-${col}`;
 
 export function useGetCellId() {
     const tableId = useContext(TableIdContext);

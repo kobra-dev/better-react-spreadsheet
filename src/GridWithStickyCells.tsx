@@ -31,7 +31,7 @@ function getShownIndices(children: React.ReactNode) {
     };
 }
 
-function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number) {
+function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number, data: number) {
     return React.useMemo(
         () =>
             React.forwardRef((props, ref) => {
@@ -114,15 +114,20 @@ function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number) 
                             columnIndex,
                             style: {
                                 marginTop,
-                                columnWidth,
-                                rowHeight,
+                                ...(rowIndex === data + 1 ? {
+                                    width: "max-content"
+                                } : {
+                                    rowHeight,
+                                    columnWidth,
+                                    justifyContent: "center",
+                                    maxWidth: columnWidth + "px"    
+                                }),
                                 position: "sticky",
                                 left: 0,
                                 zIndex: 99998,
-                                display: "flex",
-                                justifyContent: "center",
-                                maxWidth: columnWidth + "px"
-                            }
+                                display: "flex"
+                            },
+                            data
                         })
                     );
                 }
@@ -134,7 +139,7 @@ function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number) 
                     </div>
                 );
             }),
-        [Cell, columnWidth, rowHeight]
+        [Cell, columnWidth, rowHeight, data]
     );
 }
 
@@ -145,7 +150,8 @@ const GridWithStickyCellsForwardRef: ForwardRefRenderFunction<FixedSizeGrid, Fix
         innerElementType={useInnerElementType(
             props.children,
             props.columnWidth,
-            props.rowHeight
+            props.rowHeight,
+            props.itemData
         )}
     />
 );

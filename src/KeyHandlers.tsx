@@ -1,7 +1,7 @@
 import { TableContainer, TableContainerTypeMap } from "@material-ui/core";
 import type { DefaultComponentProps } from "@material-ui/core/OverridableComponent";
 import React, { useContext, useRef } from "react";
-import { DataContext, EditingContext, SelectedContext, SetDataContext, SetEditingContext, SetSelectedContext, useEnterEditing, useExitEditing } from "./state";
+import { DataContext, EditingContext, ID_BASE, SelectedContext, SetDataContext, SetEditingContext, SetSelectedContext, TableIdContext, useEnterEditing, useExitEditing } from "./state";
 
 type TableContainerProps = DefaultComponentProps<TableContainerTypeMap<{}, "div">>;
 
@@ -14,6 +14,7 @@ export default function KeyHandlers(props: TableContainerProps) {
     const setEditing = useContext(SetEditingContext);
     const enterEditing = useEnterEditing();
     const exitEditing = useExitEditing();
+    const tableId = useContext(TableIdContext);
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -37,6 +38,8 @@ export default function KeyHandlers(props: TableContainerProps) {
     };
 
     function handleKeyPress(e: React.KeyboardEvent<HTMLDivElement>) {
+        // Don't handle key presses that occur when the user is using the rowadder
+        if(document.activeElement && document.activeElement === document.getElementById(`${ID_BASE}-${tableId}-rowadder`)?.children[0].children[0]) return;
         let preventDefault = true;
 
         if (editing) {
