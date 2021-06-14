@@ -24,7 +24,6 @@ import { isFullyVisible } from "./utils";
 
 const useStyles = makeStyles((theme) => ({
     spreadsheet: {
-        margin: "1rem",
         // From Material-UI
         fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
     },
