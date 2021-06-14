@@ -1,4 +1,4 @@
-import { makeStyles, TableCell } from "@material-ui/core";
+import { makeStyles, TableCell, Theme } from "@material-ui/core";
 import type { CSSProperties as MuiCSSProperties } from "@material-ui/styles";
 import React, { CSSProperties, useContext, useMemo } from "react";
 import type { GridChildComponentProps } from "react-window";
@@ -6,12 +6,12 @@ import DataCellRenderer from "./DataCell";
 import RowAdder from "./RowAdder";
 import { DataContext, SelectedContext } from "./state";
 
-export const CELL_BORDER_COLOR = "rgb(231, 231, 231)";
+export const CELL_BORDER_COLOR = (theme: Theme) => theme.palette.type === "dark" ? "#4d5155" : "rgb(231, 231, 231)";
 
 export const CELL_UNIT_WIDTH = 74;
 export const CELL_UNIT_HEIGHT = 28;
 
-export const cellStyles: MuiCSSProperties = {
+export const cellStyles: {(theme: Theme): MuiCSSProperties} = (theme: Theme) => ({
     cursor: "cell",
     padding: "0.25rem",
     textAlign: "right",
@@ -19,26 +19,27 @@ export const cellStyles: MuiCSSProperties = {
     boxSizing: "border-box",
     minWidth: CELL_UNIT_WIDTH + "px",
     height: CELL_UNIT_HEIGHT + "px",
-    border: "0.5px solid " + CELL_BORDER_COLOR,
-    backgroundColor: "white",
+    border: "0.5px solid " + CELL_BORDER_COLOR(theme),
+    color: theme.palette.text.primary,
+    backgroundColor: theme.palette.background.default,
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
     borderRight: "none",
-    borderLeft: "1px solid " + CELL_BORDER_COLOR
-};
+    borderLeft: "1px solid " + CELL_BORDER_COLOR(theme)
+});
 
-export const HEADER_CELL_BG = "#dedede";
+export const HEADER_CELL_BG = (theme: Theme) => theme.palette.type === "dark" ? "#464749" : "#dedede";
 
-const useStyles = makeStyles((_theme) => ({
-    cell: cellStyles,
+const useStyles = makeStyles((theme) => ({
+    cell: cellStyles(theme),
     headerCell: {
         textAlign: "center",
-        backgroundColor: HEADER_CELL_BG,
+        backgroundColor: HEADER_CELL_BG(theme),
         cursor: "initial"
     },
     selectedHeaderCell: {
-        backgroundColor: "#cacaca"
+        backgroundColor: theme.palette.type === "dark" ? "#73757c" : "#cacaca"
     },
     headerRow: {
         height: "29px"

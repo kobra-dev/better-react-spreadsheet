@@ -22,7 +22,7 @@ import KeyHandlers from "./KeyHandlers";
 import CellRenderer, { CELL_UNIT_HEIGHT, CELL_UNIT_WIDTH, HEADER_CELL_BG } from "./Cell";
 import { isFullyVisible } from "./utils";
 
-const useStyles = makeStyles((_theme) => ({
+const useStyles = makeStyles((theme) => ({
     spreadsheet: {
         margin: "1rem",
         // From Material-UI
@@ -32,7 +32,7 @@ const useStyles = makeStyles((_theme) => ({
         height: "100%"
     },
     grid: {
-        backgroundColor: HEADER_CELL_BG
+        backgroundColor: HEADER_CELL_BG(theme)
     }
 }));
 

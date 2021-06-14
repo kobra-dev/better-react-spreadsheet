@@ -18,7 +18,7 @@ import {
 } from "./Cell";
 
 const useStyles = makeStyles((theme) => ({
-    cell: cellStyles,
+    cell: cellStyles(theme),
     selectedCell: {
         // Hopefully no one is using this with 9999 columns
         // For some reason TypeScript hates this being a string so I have to do this
@@ -54,9 +54,9 @@ const shiftEC = (style: CSSProperties) => ({
 });
 
 const useEditorStyles = makeStyles<Theme, { editingWidth: number }>(
-    (_theme) => ({
+    (theme) => ({
         cellEditorInput: (props) => ({
-            backgroundColor: "white",
+            backgroundColor: theme.palette.background.default,
             padding: "3px 0",
             height: "0px",
             width: props.editingWidth - 9 + "px",

@@ -3,17 +3,18 @@ import React, { CSSProperties, useContext, useState } from "react";
 import { CELL_UNIT_HEIGHT, CELL_BORDER_COLOR } from "./Cell";
 import { DataContext, ID_BASE, SetDataContext, TableIdContext } from "./state";
 
-const useStyles = makeStyles((_theme) => ({
+const useStyles = makeStyles((theme) => ({
     wrapper: {
         height: CELL_UNIT_HEIGHT,
         alignItems: "center",
         padding: "0 0.25rem",
-        border: "1px solid " + CELL_BORDER_COLOR,
-        boxSizing: "border-box"
+        border: "1px solid " + CELL_BORDER_COLOR(theme),
+        boxSizing: "border-box",
+        color: theme.palette.text.primary
     },
     input: {
         maxWidth: "4rem",
-        border: "1px solid " + CELL_BORDER_COLOR,
+        border: "1px solid " + CELL_BORDER_COLOR(theme),
         "& > input": {
             padding: 0
         }

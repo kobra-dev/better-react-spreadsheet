@@ -2,11 +2,12 @@ import React from "react";
 import { Meta, Story } from "@storybook/react";
 import Spreadsheet, { normalizeRows, SpreadsheetProps } from "../src";
 import { useState } from "@storybook/client-api";
-import { makeStyles } from "@material-ui/core";
+import { createMuiTheme, makeStyles, ThemeProvider } from "@material-ui/core";
 
 interface SpreadsheetStoryProps {
     width: number;
     height: number;
+    darkTheme: boolean;
 }
 
 const meta: Meta = {
@@ -26,6 +27,12 @@ const meta: Meta = {
                 required: true
             },
             defaultValue: 300
+        },
+        darkTheme: {
+            type: {
+                name: "boolean"
+            },
+            defaultValue: false
         }
     },
     parameters: {
@@ -42,12 +49,22 @@ const useStyles = makeStyles((_theme) => ({
     })
 }));
 
+const getMuiTheme = (isDark: boolean) =>
+    createMuiTheme({
+        palette: {
+            type: isDark ? "dark" : "light"
+        }
+    });
+
 const Template: Story<SpreadsheetStoryProps> = (args) => {
     const styles = useStyles(args);
     const [data, setData] = useState(() => normalizeRows([], 20, 20));
+    console.log(getMuiTheme(args.darkTheme))
 
     return (
-        <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} {...args} />
+        <ThemeProvider theme={getMuiTheme(args.darkTheme)}>
+            <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} />
+        </ThemeProvider>
     );
 };
 
