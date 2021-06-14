@@ -4,11 +4,11 @@
   "size-limit": [
     {
       "path": "dist/better-react-spreadsheet.cjs.production.min.js",
-      "limit": "10 KB"
+      "limit": "200 KB"
     },
     {
       "path": "dist/better-react-spreadsheet.esm.js",
-      "limit": "10 KB"
+      "limit": "100 KB"
     }
   ],
   "version": "0.1.0",
