@@ -30,7 +30,11 @@ interface MultipleContextsProps {
     children: React.ReactNode;
 }
 
-const MultipleContexts = ({ contexts, children }: MultipleContextsProps) =>
+const MultipleContexts = ({
+    contexts, 
+    //@ts-ignore
+    children 
+}: MultipleContextsProps) =>
     [
         // @ts-ignore
         { ...contexts[0], props: { ...contexts[0].props, children } },

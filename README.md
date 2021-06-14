@@ -97,6 +97,11 @@ export default function App() {
 }
 ```
 
+## Development
+We use TSDX for scaffolding the library. For information about how to get started, check out [the TSDX default README](README.tsdx.md).
+
+TLDR: run `yarn start` in one terminal, then run `yarn storybook` to run Storybook.
+
 ## Showcase
 
 We're currently working on integrating Better React Spreadsheet into [Kobra](https://kobra.dev); we'll update this page when that's complete. If you develop (or know of) a project using Better React Spreadsheet, feel free to submit an issue or PR and we'll add you to this section.

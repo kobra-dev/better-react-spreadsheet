@@ -54,7 +54,7 @@ const shiftEC = (style: CSSProperties) => ({
 });
 
 const useEditorStyles = makeStyles<Theme, { editingWidth: number }>(
-    (theme) => ({
+    (_theme) => ({
         cellEditorInput: (props) => ({
             backgroundColor: "white",
             padding: "3px 0",

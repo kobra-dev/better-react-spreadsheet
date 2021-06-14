@@ -2,7 +2,7 @@ import { Table, makeStyles } from "@material-ui/core";
 import type { FixedSizeGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { GridWithStickyCells } from "./GridWithStickyCells";
 import {
     DataContext,
@@ -22,9 +22,11 @@ import KeyHandlers from "./KeyHandlers";
 import CellRenderer, { CELL_UNIT_HEIGHT, CELL_UNIT_WIDTH, HEADER_CELL_BG } from "./Cell";
 import { isFullyVisible } from "./utils";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((_theme) => ({
     spreadsheet: {
-        margin: "1rem"
+        margin: "1rem",
+        // From Material-UI
+        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
     },
     h100: {
         height: "100%"

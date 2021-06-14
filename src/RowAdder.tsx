@@ -3,7 +3,7 @@ import React, { CSSProperties, useContext, useState } from "react";
 import { CELL_UNIT_HEIGHT, CELL_BORDER_COLOR } from "./Cell";
 import { DataContext, ID_BASE, SetDataContext, TableIdContext } from "./state";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((_theme) => ({
     wrapper: {
         height: CELL_UNIT_HEIGHT,
         alignItems: "center",

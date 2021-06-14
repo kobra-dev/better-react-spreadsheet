@@ -1,12 +1,13 @@
+import 'react-app-polyfill/ie11';
 import React, { useRef, useState } from "react";
+import ReactDOM from 'react-dom';
+import Spreadsheet, { dataToCSV, normalizeRows, parseCSV } from '../.';
 import {
     Button,
     createMuiTheme,
     makeStyles,
     ThemeProvider
 } from "@material-ui/core";
-import Spreadsheet from "./Spreadsheet";
-import { dataToCSV, normalizeRows, parseCSV } from "./utils";
 
 const getMuiTheme = (isDark: boolean) =>
     createMuiTheme({
@@ -64,3 +65,5 @@ export default function App() {
         </div>
     );
 }
+
+ReactDOM.render(<App />, document.getElementById('root'));

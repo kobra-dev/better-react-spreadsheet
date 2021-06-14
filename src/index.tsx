@@ -1,17 +1,7 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import App from "./App";
-import "./index.css";
+// Please do not use types off of a default export module or else Storybook Docs will suffer.
+// see: https://github.com/storybookjs/storybook/issues/9556
 
-ReactDOM.render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-    document.getElementById("root")
-);
-
-// Hot Module Replacement (HMR) - Remove this snippet to remove HMR.
-// Learn more: https://snowpack.dev/concepts/hot-module-replacement
-if (import.meta.hot) {
-    import.meta.hot.accept();
-}
+import Spreadsheet, { SpreadsheetProps } from "./Spreadsheet";
+export default Spreadsheet;
+export { SpreadsheetProps };
+export { cloneDataArray, normalizeRows, parseCSV, dataToCSV } from "./utils";

@@ -30,7 +30,7 @@ export const cellStyles: MuiCSSProperties = {
 
 export const HEADER_CELL_BG = "#dedede";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((_theme) => ({
     cell: cellStyles,
     headerCell: {
         textAlign: "center",
