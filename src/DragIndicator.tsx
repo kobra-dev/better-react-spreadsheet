@@ -23,7 +23,7 @@ const useStyles = makeStyles(theme => ({
                       CELL_UNIT_HEIGHT,
                   backgroundColor: theme.palette.primary.light,
                   opacity: 0.2,
-                  zIndex: 9999999,
+                  zIndex: 99990,
                   pointerEvents: "none"
               }
             : {}

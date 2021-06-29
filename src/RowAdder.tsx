@@ -10,7 +10,11 @@ const useStyles = makeStyles((theme) => ({
         padding: "0 0.25rem",
         border: "1px solid " + CELL_BORDER_COLOR(theme),
         boxSizing: "border-box",
-        color: theme.palette.text.primary
+        color: theme.palette.text.primary,
+        userSelect: "none",
+        msUserSelect: "none",
+        MozUserSelect: "none",
+        WebkitUserSelect: "none"
     },
     input: {
         maxWidth: "4rem",

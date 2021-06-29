@@ -44,7 +44,7 @@ export default function KeyHandlers(props: TableContainerProps) {
         // Don't handle key presses that occur when the user is using the rowadder
         if(document.activeElement && document.activeElement === document.getElementById(`${ID_BASE}-${tableId}-rowadder`)?.children[0].children[0]) return;
         let preventDefault = true;
-        let clearDragSelection = true;
+        let clearDragSelection = false;
 
         if (editing) {
             switch (e.key) {
@@ -78,6 +78,7 @@ export default function KeyHandlers(props: TableContainerProps) {
             switch (e.key) {
                 case "Enter": {
                     enterEditing();
+                    clearDragSelection = true;
                     break;
                 }
                 // TODO: accessibility
@@ -87,6 +88,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                     } else {
                         arrowRight();
                     }
+                    clearDragSelection = true;
                     break;
                 }
                 case "Delete":
@@ -104,26 +106,69 @@ export default function KeyHandlers(props: TableContainerProps) {
                     else {
                         newData[selected[0]][selected[1]] = "";
                     }
-                    clearDragSelection = false;
                     setData(newData);
                     break;
                 }
                 case "ArrowLeft": {
-                    arrowLeft();
+                    if(e.shiftKey) {
+                        if(!dragSelection && selected[1] > 0) {
+                            setDragSelection([selected, [selected[0], selected[1] - 1]]);
+                        }
+                        else if(dragSelection && dragSelection[1][1] > 0) {
+                            setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] - 1]]);
+                        }
+                    }
+                    else {
+                        arrowLeft();
+                        clearDragSelection = true;
+                    }
                     break;
                 }
                 case "ArrowRight": {
-                    arrowRight();
+                    if(e.shiftKey) {
+                        if(!dragSelection && selected[1] < data[0].length - 1) {
+                            setDragSelection([selected, [selected[0], selected[1] + 1]]);
+                        }
+                        else if(dragSelection && dragSelection[1][1] < data[0].length - 1) {
+                            setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] + 1]]);
+                        }
+                    }
+                    else {
+                        arrowRight();
+                        clearDragSelection = true;    
+                    }
                     break;
                 }
                 case "ArrowUp": {
-                    if (selected[0] > 0) {
-                        setSelected([selected[0] - 1, selected[1]]);
+                    if(e.shiftKey) {
+                        if(!dragSelection && selected[0] > 0) {
+                            setDragSelection([selected, [selected[0] - 1, selected[1]]]);
+                        }
+                        else if(dragSelection && dragSelection[1][0] > 0) {
+                            setDragSelection([dragSelection[0], [dragSelection[1][0] - 1, dragSelection[1][1]]]);
+                        }
+                    }
+                    else {
+                        if (selected[0] > 0) {
+                            setSelected([selected[0] - 1, selected[1]]);
+                        }
+                        clearDragSelection = true;
                     }
                     break;
                 }
                 case "ArrowDown": {
-                    arrowDown();
+                    if(e.shiftKey) {
+                        if(!dragSelection && selected[0] < data.length - 1) {
+                            setDragSelection([selected, [selected[0] + 1, selected[1]]]);
+                        }
+                        else if(dragSelection && dragSelection[1][0] < data.length - 1) {
+                            setDragSelection([dragSelection[0], [dragSelection[1][0] + 1, dragSelection[1][1]]]);
+                        }
+                    }
+                    else {
+                        arrowDown();
+                        clearDragSelection = true;    
+                    }
                     break;
                 }
                 default: {
@@ -131,6 +176,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                     if (e.key.length === 1) {
                         // It's probably a letter key
                         enterEditing("");
+                        clearDragSelection = true;
                     }
                     break;
                 }

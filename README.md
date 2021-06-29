@@ -1,16 +1,18 @@
 # Better React Spreadsheet
 
-A better spreadsheet widget for React (currently in active development)
+A better spreadsheet widget for React (currently in active development, but probably stable enough to use)
 
 Project goals:
 - [x] ⚡ Fully virtualized (rows and columns)
 - [x] ⌨️ Same key shortcuts as industry standard spreadsheet software (Google Docs, Excel, etc)
 - [x] 🏢 Modern architecture (React function components)
 - [ ] 📊 Easy dataset creation and editing
-    - [ ] Selection of multiple cells
-    - [ ] Insert rows
+    - [x] Selection of multiple cells
+    - [x] Insert rows
     - [ ] Insert columns
     - [ ] Drag-to-autocomplete like in a spreadsheet
+    - [ ] Copy, cut, paste (for single cells or multiple cells)
+    - [ ] Paste data from other spreadsheet programs
 - [x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
 
 ## Usage
@@ -100,8 +102,11 @@ export default function App() {
 ## Development
 We use TSDX for scaffolding the library. For information about how to get started, check out [the TSDX default README](README.tsdx.md).
 
-TLDR: run `yarn start` in one terminal, then run `yarn storybook` to run Storybook.
+TLDR: run `yarn start` in one terminal, then run `yarn storybook` to run Storybook (although just running `yarn storybook` has worked fine for me).
 
 ## Showcase
 
-We're currently working on integrating Better React Spreadsheet into [Kobra](https://kobra.dev); we'll update this page when that's complete. If you develop (or know of) a project using Better React Spreadsheet, feel free to submit an issue or PR and we'll add you to this section.
+- [Kobra](https://kobra.dev) (integrated into the dataset manager):
+  ![Screenshot of edit dataset dialog in Kobra, powered by Better React Spreadsheet](/assets/showcase-kobra.png)
+
+If you develop (or know of) a project using Better React Spreadsheet, feel free to submit an issue or PR and we'll add you to this section.

@@ -59,7 +59,6 @@ const getMuiTheme = (isDark: boolean) =>
 const Template: Story<SpreadsheetStoryProps> = (args) => {
     const styles = useStyles(args);
     const [data, setData] = useState(() => normalizeRows([], 20, 20));
-    console.log(getMuiTheme(args.darkTheme))
 
     return (
         <ThemeProvider theme={getMuiTheme(args.darkTheme)}>
