@@ -1,10 +1,14 @@
 import { InputBase, makeStyles, TableCell, Theme } from "@material-ui/core";
 import React, { CSSProperties, useContext } from "react";
 import {
+    DragSelectionContext,
     EditingContext,
     EditorValueContext,
+    IsDraggingContext,
     SelectedContext,
+    SetDragSelectionContext,
     SetEditorValueContext,
+    SetIsDraggingContext,
     SetSelectedContext,
     useEnterEditing,
     useExitEditing,
@@ -115,6 +119,10 @@ export default function DataCellRenderer(props: {
     const selected = useContext(SelectedContext);
     const setSelected = useContext(SetSelectedContext);
     const getCellId = useGetCellId();
+    const dragSelection = useContext(DragSelectionContext);
+    const setDragSelection = useContext(SetDragSelectionContext);
+    const isDragging = useContext(IsDraggingContext);
+    const setIsDragging = useContext(SetIsDraggingContext);
 
     const thisIs = (a: number[] | undefined) =>
         a && a[0] === row && a[1] === col;
@@ -132,6 +140,7 @@ export default function DataCellRenderer(props: {
               >
           ) => {
               // e.detail is the number of clicks (2 is double click)
+              setDragSelection(undefined);
               switch (e.detail) {
                   case 1: {
                       exitEditing();
@@ -162,6 +171,21 @@ export default function DataCellRenderer(props: {
                         }
                         style={shiftEC(style)}
                         onClick={isEditing ? undefined : cellClickHandler}
+                        onMouseMove={(e) => {
+                            if(e.buttons === 1 && (!isDragging || !dragSelection || (dragSelection[1][0] !== row || dragSelection[1][1] !== col))) {
+                                if(!isDragging) {
+                                    setIsDragging(true);
+                                    setSelected([row, col]);
+                                }
+                                setDragSelection([(isDragging ? dragSelection?.[0] : undefined) ?? [row, col], [row, col]]);
+                            }
+                        }}
+                        onMouseUp={() => {
+                            if(isDragging) {
+                                setDragSelection([dragSelection?.[0] ?? [row, col], [row, col]]);
+                                setIsDragging(false);
+                            }
+                        }}
                     />
                 )
             }

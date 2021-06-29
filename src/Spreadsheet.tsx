@@ -6,14 +6,19 @@ import React, { useState, useRef, useCallback } from "react";
 import { GridWithStickyCells } from "./GridWithStickyCells";
 import {
     DataContext,
+    DragSelection,
+    DragSelectionContext,
     EditingContext,
     EditorValueContext,
     getCellIdTableId,
     ID_BASE,
+    IsDraggingContext,
     SelectedContext,
     SetDataContext,
+    SetDragSelectionContext,
     SetEditingContext,
     SetEditorValueContext,
+    SetIsDraggingContext,
     SetSelectedContext,
     StateProvider,
     TableIdContext
@@ -57,6 +62,8 @@ export default function Spreadsheet(props: SpreadsheetProps) {
     const [selected, setSelected_state] = useState<Coords>([0, 0]);
     const [editing, setEditing] = useState<Editing | undefined>(undefined);
     const [editorValue, setEditorValue] = useState("");
+    const [dragSelection, setDragSelection] = useState<DragSelection>(undefined);
+    const [isDragging, setIsDragging] = useState(false);
 
     const styles = useStyles();
 
@@ -116,7 +123,11 @@ export default function Spreadsheet(props: SpreadsheetProps) {
                 [SetEditingContext, setEditing],
                 [EditorValueContext, editorValue],
                 [SetEditorValueContext, setEditorValue],
-                [TableIdContext, tableId]
+                [TableIdContext, tableId],
+                [DragSelectionContext, dragSelection],
+                [SetDragSelectionContext, setDragSelection],
+                [IsDraggingContext, isDragging],
+                [SetIsDraggingContext, setIsDragging]
             ]}
         >
             <KeyHandlers

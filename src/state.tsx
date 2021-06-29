@@ -21,6 +21,11 @@ export const EditorValueContext = React.createContext("");
 export const SetEditorValueContext =
     React.createContext<StateSet<string>>(empty);
 export const TableIdContext = React.createContext<number>(0);
+export type DragSelection = [Coords, Coords] | undefined;
+export const DragSelectionContext = React.createContext<DragSelection>(undefined);
+export const SetDragSelectionContext = React.createContext<StateSet<DragSelection>>(empty);
+export const IsDraggingContext = React.createContext(false);
+export const SetIsDraggingContext = React.createContext<StateSet<boolean>>(empty);
 
 type StateProviderItem<T> = [React.Context<T>, T];
 

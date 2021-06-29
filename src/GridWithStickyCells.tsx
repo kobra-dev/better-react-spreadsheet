@@ -1,5 +1,6 @@
 import React, { ForwardRefRenderFunction } from "react";
 import { FixedSizeGrid, FixedSizeGrid as Grid, FixedSizeGridProps } from "react-window";
+import DragIndicator from "./DragIndicator";
 
 function getCellIndices(child: any) {
     return { row: child.props.rowIndex, column: child.props.columnIndex };
@@ -136,6 +137,7 @@ function useInnerElementType(Cell: any, columnWidth: number, rowHeight: number, 
                     //@ts-ignore
                     <div ref={ref} {...props}>
                         {children}
+                        <DragIndicator />
                     </div>
                 );
             }),

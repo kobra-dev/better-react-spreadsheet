@@ -1,7 +1,8 @@
 import { TableContainer, TableContainerTypeMap } from "@material-ui/core";
 import type { DefaultComponentProps } from "@material-ui/core/OverridableComponent";
 import React, { useContext, useRef } from "react";
-import { DataContext, EditingContext, ID_BASE, SelectedContext, SetDataContext, SetEditingContext, SetSelectedContext, TableIdContext, useEnterEditing, useExitEditing } from "./state";
+import { dragSelectionToRect } from "./DragIndicator";
+import { DataContext, DragSelectionContext, EditingContext, ID_BASE, SelectedContext, SetDataContext, SetDragSelectionContext, SetEditingContext, SetSelectedContext, TableIdContext, useEnterEditing, useExitEditing } from "./state";
 
 type TableContainerProps = DefaultComponentProps<TableContainerTypeMap<{}, "div">>;
 
@@ -15,6 +16,8 @@ export default function KeyHandlers(props: TableContainerProps) {
     const enterEditing = useEnterEditing();
     const exitEditing = useExitEditing();
     const tableId = useContext(TableIdContext);
+    const dragSelection = useContext(DragSelectionContext);
+    const setDragSelection = useContext(SetDragSelectionContext);
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +44,7 @@ export default function KeyHandlers(props: TableContainerProps) {
         // Don't handle key presses that occur when the user is using the rowadder
         if(document.activeElement && document.activeElement === document.getElementById(`${ID_BASE}-${tableId}-rowadder`)?.children[0].children[0]) return;
         let preventDefault = true;
+        let clearDragSelection = true;
 
         if (editing) {
             switch (e.key) {
@@ -89,7 +93,18 @@ export default function KeyHandlers(props: TableContainerProps) {
                 case "Backspace": {
                     // New object so React knows to rerender the component
                     const newData = data.slice();
-                    newData[selected[0]][selected[1]] = "";
+                    if(dragSelection) {
+                        const rect = dragSelectionToRect(dragSelection);
+                        for(let row = rect[0][0]; row <= rect[1][0]; row++) {
+                            for(let col = rect[0][1]; col <= rect[1][1]; col++) {
+                                newData[row][col] = "";
+                            }
+                        }
+                    }
+                    else {
+                        newData[selected[0]][selected[1]] = "";
+                    }
+                    clearDragSelection = false;
                     setData(newData);
                     break;
                 }
@@ -124,6 +139,9 @@ export default function KeyHandlers(props: TableContainerProps) {
 
         if (preventDefault) {
             e.preventDefault();
+        }
+        if(clearDragSelection) {
+            setDragSelection(undefined);
         }
     }
 
