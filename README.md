@@ -9,10 +9,10 @@ Project goals:
 - [ ] 📊 Easy dataset creation and editing
     - [x] Selection of multiple cells
     - [x] Insert rows
+    - [x] Copy, cut, paste (for single cells or multiple cells)
+    - [x] Paste data from other spreadsheet programs
     - [ ] Insert columns
     - [ ] Drag-to-autocomplete like in a spreadsheet
-    - [ ] Copy, cut, paste (for single cells or multiple cells)
-    - [ ] Paste data from other spreadsheet programs
 - [x] 📁 Internally and externally, data is just a 2D array, so interop with file formats like CSV is really easy
 
 ## Usage
