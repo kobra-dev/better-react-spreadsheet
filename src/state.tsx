@@ -6,7 +6,7 @@ import type {
 } from "./Spreadsheet";
 
 type StateSet<T> = React.Dispatch<React.SetStateAction<T>>;
-type Data = string[][];
+export type Data = string[][];
 const empty = () => {};
 
 export const DataContext = React.createContext<Data>([]);
