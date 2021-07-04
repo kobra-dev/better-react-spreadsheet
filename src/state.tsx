@@ -122,12 +122,12 @@ export function useExitEditing() {
     const data = useData();
     const selected = useContext(SelectedContext);
     const editorValue = useContext(EditorValueContext);
-    const { setData } = useSetData();
+    const { dataHasChanged } = useSetData();
 
     return () => {
         if(!editing) return;
         data[selected[0]][selected[1]] = editorValue;
-        setData(data);
+        dataHasChanged();
         setEditing(undefined);
     };
 }
