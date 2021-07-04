@@ -5,7 +5,9 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import { GridWithStickyCells } from "./GridWithStickyCells";
 import {
-    DataContext,
+    CopySelectionContext,
+    _DONT_USE_DIRECTLY_DataContext,
+    DataRerenderContext,
     DragSelection,
     DragSelectionContext,
     EditingContext,
@@ -14,7 +16,9 @@ import {
     ID_BASE,
     IsDraggingContext,
     SelectedContext,
+    SetCopySelectionContext,
     SetDataContext,
+    SetDataRerenderContext,
     SetDragSelectionContext,
     SetEditingContext,
     SetEditorValueContext,
@@ -64,6 +68,8 @@ export default function Spreadsheet(props: SpreadsheetProps) {
     const [editorValue, setEditorValue] = useState("");
     const [dragSelection, setDragSelection] = useState<DragSelection>(undefined);
     const [isDragging, setIsDragging] = useState(false);
+    const [copySelection, setCopySelection] = useState<DragSelection>(undefined);
+    const [dataRerender, setDataRerender] = useState(false);
 
     const styles = useStyles();
 
@@ -121,7 +127,7 @@ export default function Spreadsheet(props: SpreadsheetProps) {
     return (
         <StateProvider
             contexts={[
-                [DataContext, props.data],
+                [_DONT_USE_DIRECTLY_DataContext, props.data],
                 [SetDataContext, props.onChange],
                 [SelectedContext, selected],
                 [SetSelectedContext, setSelected],
@@ -133,7 +139,11 @@ export default function Spreadsheet(props: SpreadsheetProps) {
                 [DragSelectionContext, dragSelection],
                 [SetDragSelectionContext, setDragSelection],
                 [IsDraggingContext, isDragging],
-                [SetIsDraggingContext, setIsDragging]
+                [SetIsDraggingContext, setIsDragging],
+                [CopySelectionContext, copySelection],
+                [SetCopySelectionContext, setCopySelection],
+                [DataRerenderContext, dataRerender],
+                [SetDataRerenderContext, setDataRerender]
             ]}
         >
             <KeyHandlers

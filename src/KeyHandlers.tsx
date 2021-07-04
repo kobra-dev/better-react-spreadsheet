@@ -1,17 +1,18 @@
 import { TableContainer, TableContainerTypeMap } from "@material-ui/core";
 import type { DefaultComponentProps } from "@material-ui/core/OverridableComponent";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useRef, useState } from "react";
 import Papa from "papaparse";
 import { dragSelectionToRect } from "./DragIndicator";
-import { Data, DataContext, DragSelectionContext, EditingContext, ID_BASE, SelectedContext, SetDataContext, SetDragSelectionContext, SetEditingContext, SetSelectedContext, TableIdContext, useEnterEditing, useExitEditing } from "./state";
+import { CopySelectionContext, Data, DragSelectionContext, EditingContext, ID_BASE, SelectedContext, SetCopySelectionContext, SetDragSelectionContext, SetEditingContext, SetSelectedContext, TableIdContext, useData, useEnterEditing, useExitEditing, useSetData } from "./state";
+import { normalizeNewlines } from "./utils";
 
 type TableContainerProps = DefaultComponentProps<TableContainerTypeMap<{}, "div">>;
 
 export default function KeyHandlers(props: TableContainerProps) {
     const selected = useContext(SelectedContext);
     const setSelected = useContext(SetSelectedContext);
-    const data = useContext(DataContext);
-    const setData = useContext(SetDataContext);
+    const data = useData();
+    const { dataHasChanged } = useSetData();
     const editing = useContext(EditingContext);
     const setEditing = useContext(SetEditingContext);
     const enterEditing = useEnterEditing();
@@ -19,6 +20,10 @@ export default function KeyHandlers(props: TableContainerProps) {
     const tableId = useContext(TableIdContext);
     const dragSelection = useContext(DragSelectionContext);
     const setDragSelection = useContext(SetDragSelectionContext);
+    const copySelection = useContext(CopySelectionContext);
+    const setCopySelection = useContext(SetCopySelectionContext);
+
+    const [lastCut, setLastCut] = useState<string | undefined>();
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -42,20 +47,18 @@ export default function KeyHandlers(props: TableContainerProps) {
     };
 
     const backspace = () => {
-        // New object so React knows to rerender the component
-        const newData = data.slice();
         if(dragSelection) {
             const rect = dragSelectionToRect(dragSelection);
             for(let row = rect[0][0]; row <= rect[1][0]; row++) {
                 for(let col = rect[0][1]; col <= rect[1][1]; col++) {
-                    newData[row][col] = "";
+                    data[row][col] = "";
                 }
             }
         }
         else {
-            newData[selected[0]][selected[1]] = "";
+            data[selected[0]][selected[1]] = "";
         }
-        setData(newData);
+        dataHasChanged();
     };
 
     const getCopyData = () => {
@@ -63,9 +66,11 @@ export default function KeyHandlers(props: TableContainerProps) {
         if(dragSelection) {
             const rect = dragSelectionToRect(dragSelection);
             copyData = data.slice(rect[0][0], rect[1][0] + 1).map(row => row.slice(rect[0][1], rect[1][1] + 1));
+            setCopySelection(rect);
         }
         else {
             copyData = [[ data[selected[0]][selected[1]] ]];
+            setCopySelection([selected, selected]);
         }
 
         return Papa.unparse(copyData, { delimiter: "\t" });
@@ -107,6 +112,12 @@ export default function KeyHandlers(props: TableContainerProps) {
             }
         } else {
             switch (e.key) {
+                case "Escape": {
+                    preventDefault = false;
+                    setCopySelection(undefined);
+                    setLastCut(undefined);
+                    break;
+                }
                 case "Enter": {
                     enterEditing();
                     clearDragSelection = true;
@@ -217,7 +228,7 @@ export default function KeyHandlers(props: TableContainerProps) {
             e.stopPropagation();
 
             e.clipboardData?.setData("text/plain", getCopyData());
-            // TODO: indicator around copied cells
+            setLastCut(undefined);
         }
     };
 
@@ -226,9 +237,10 @@ export default function KeyHandlers(props: TableContainerProps) {
             e.preventDefault();
             e.stopPropagation();
             
-            // Cutting is just copying then clearing the selected cells
-            e.clipboardData?.setData("text/plain", getCopyData());
-            backspace();
+            const copyData = getCopyData();
+            e.clipboardData?.setData("text/plain", copyData);
+            // Set the flag so that when the user pastes the data it will know to remove the old data
+            setLastCut(copyData);
         }
     };
 
@@ -242,18 +254,31 @@ export default function KeyHandlers(props: TableContainerProps) {
             const parsed = Papa.parse<string[]>(clipboardText, { delimiter: "\t" });
             let pasteData: Data = parsed.data;
 
-            let newData = data.slice();
+            if(lastCut) {
+                // Remove the cut cells first so that none of the new pasted data will be removed
+                if(normalizeNewlines(lastCut) === normalizeNewlines(clipboardText)) {
+                    // Use copySelection as an indicator of where the data was cut from
+                    if(!copySelection) throw new Error("copySelection is undefined but lastCut exists, this should not happen");
+                    // If the last cut is equal to the current paste, remove the old data
+                    for(let row = copySelection[0][0]; row <= copySelection[1][0]; row++) {
+                        for(let col = copySelection[0][1]; col <= copySelection[1][1]; col++) {
+                            data[row][col] = "";
+                        }
+                    }
+                }
+                setLastCut(undefined);
+            }
 
             // Make sure there's enough rows and columns
             const newRows = selected[0] + pasteData.length;
-            if(newRows > newData.length) {
-                for(let i = newData.length; i < newRows; i++) {
-                    newData.push(Array(newData[0].length).fill(""));
+            if(newRows > data.length) {
+                for(let i = data.length; i < newRows; i++) {
+                    data.push(Array(data[0].length).fill(""));
                 }
             }
             const newCols = selected[1] + Math.max(...pasteData.map(row => row.length));
-            if(newCols > newData[0].length) {
-                for(const row of newData) {
+            if(newCols > data[0].length) {
+                for(const row of data) {
                     for(let i = row.length; i < newCols; i++) {
                         row.push("");
                     }
@@ -262,11 +287,12 @@ export default function KeyHandlers(props: TableContainerProps) {
 
             for(let row = 0; row < pasteData.length; row++) {
                 for(let col = 0; col < pasteData[row].length; col++) {
-                    newData[selected[0] + row][selected[1] + col] = pasteData[row][col];
+                    data[selected[0] + row][selected[1] + col] = pasteData[row][col];
                 }
             }
 
-            setData(newData);
+            setCopySelection(undefined);
+            dataHasChanged();
         }
     };
 

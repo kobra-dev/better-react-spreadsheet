@@ -4,7 +4,7 @@ import React, { CSSProperties, useContext, useMemo } from "react";
 import type { GridChildComponentProps } from "react-window";
 import DataCellRenderer from "./DataCell";
 import RowAdder from "./RowAdder";
-import { DataContext, SelectedContext } from "./state";
+import { SelectedContext, useData } from "./state";
 
 export const CELL_BORDER_COLOR = (theme: Theme) => theme.palette.type === "dark" ? "#4d5155" : "rgb(231, 231, 231)";
 
@@ -125,7 +125,7 @@ function DataCellWrapper({
     col: number;
     isScrolling: boolean | undefined;
 }) {
-    const data = useContext(DataContext);
+    const data = useData();
     const selected = useContext(SelectedContext);
     const isSelected = selected[0] === row && selected[1] === col;
 

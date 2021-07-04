@@ -9,8 +9,27 @@ type StateSet<T> = React.Dispatch<React.SetStateAction<T>>;
 export type Data = string[][];
 const empty = () => {};
 
-export const DataContext = React.createContext<Data>([]);
+// Always use useData so that components will rerender when dataHasChanged in the useSetData hook is called
+export const _DONT_USE_DIRECTLY_DataContext = React.createContext<Data>([]);
 export const SetDataContext = React.createContext<StateSet<Data>>(empty);
+export const DataRerenderContext = React.createContext(false);
+export const SetDataRerenderContext = React.createContext<StateSet<boolean>>(empty);
+
+export function useData() {
+    useContext(DataRerenderContext);
+    return useContext(_DONT_USE_DIRECTLY_DataContext);
+}
+
+export function useSetData() {
+    const setDataRerender = useContext(SetDataRerenderContext);
+
+    return {
+        setData: useContext(SetDataContext),
+        // React can't detect changes to the contents of the data array, so call dataHasChanged after you're done to avoid slicing the array, editing it, then calling setData
+        dataHasChanged: () => setDataRerender(p => !p)
+    };
+}
+
 export const SelectedContext = React.createContext<Coords>([0, 0]);
 export const SetSelectedContext = React.createContext<StateSet<Coords>>(empty);
 export const EditingContext =
@@ -26,6 +45,8 @@ export const DragSelectionContext = React.createContext<DragSelection>(undefined
 export const SetDragSelectionContext = React.createContext<StateSet<DragSelection>>(empty);
 export const IsDraggingContext = React.createContext(false);
 export const SetIsDraggingContext = React.createContext<StateSet<boolean>>(empty);
+export const CopySelectionContext = React.createContext<DragSelection>(undefined);
+export const SetCopySelectionContext = React.createContext<StateSet<DragSelection>>(empty);
 
 type StateProviderItem<T> = [React.Context<T>, T];
 
@@ -77,7 +98,7 @@ export function useGetCellId() {
 export function useEnterEditing() {
     const setEditorValue = useContext(SetEditorValueContext);
     const setEditing = useContext(SetEditingContext);
-    const data = useContext(DataContext);
+    const data = useData();
     const selected = useContext(SelectedContext);
     const getCellId = useGetCellId();
 
@@ -98,10 +119,10 @@ export function useEnterEditing() {
 export function useExitEditing() {
     const editing = useContext(EditingContext);
     const setEditing = useContext(SetEditingContext);
-    const data = useContext(DataContext);
+    const data = useData();
     const selected = useContext(SelectedContext);
     const editorValue = useContext(EditorValueContext);
-    const setData = useContext(SetDataContext);
+    const { setData } = useSetData();
 
     return () => {
         if(!editing) return;

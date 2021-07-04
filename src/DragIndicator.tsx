@@ -1,30 +1,38 @@
 import { makeStyles } from "@material-ui/core";
+import type { CSSProperties } from "@material-ui/core/styles/withStyles";
 import React, { useContext } from "react";
 import { CELL_UNIT_HEIGHT, CELL_UNIT_WIDTH } from "./Cell";
 import type { Coords } from "./Spreadsheet";
 import { DragSelection, DragSelectionContext } from "./state";
 
+export const indicatorStyles: {(selection: [Coords, Coords]): CSSProperties} = (selection) => ({
+    position: "absolute",
+    left: (selection[0][1] + 1) * CELL_UNIT_WIDTH,
+    top: (selection[0][0] + 1) * CELL_UNIT_HEIGHT,
+    width:
+        (selection[1][1] -
+            selection[0][1] +
+            1) *
+        CELL_UNIT_WIDTH 
+        // Add 1 to cover the left border of the next cell
+        + 1,
+    height:
+        (selection[1][0] -
+            selection[0][0] +
+            1) *
+        CELL_UNIT_HEIGHT,
+    zIndex: 99990,
+    pointerEvents: "none",
+    boxSizing: "border-box"
+});
+
 const useStyles = makeStyles(theme => ({
     root: (props: { dragSelection: DragSelection }) =>
         props.dragSelection
             ? {
-                  position: "absolute",
-                  left: (props.dragSelection[0][1] + 1) * CELL_UNIT_WIDTH,
-                  top: (props.dragSelection[0][0] + 1) * CELL_UNIT_HEIGHT,
-                  width:
-                      (props.dragSelection[1][1] -
-                          props.dragSelection[0][1] +
-                          1) *
-                      CELL_UNIT_WIDTH,
-                  height:
-                      (props.dragSelection[1][0] -
-                          props.dragSelection[0][0] +
-                          1) *
-                      CELL_UNIT_HEIGHT,
+                ...indicatorStyles(props.dragSelection),
                   backgroundColor: theme.palette.primary.light,
-                  opacity: 0.2,
-                  zIndex: 99990,
-                  pointerEvents: "none"
+                  opacity: 0.2
               }
             : {}
 }));

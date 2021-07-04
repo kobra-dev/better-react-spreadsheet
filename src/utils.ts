@@ -15,6 +15,11 @@ export function cloneDataArray(data: string[][]) {
     return data.map(row => row.slice());
 }
 
+// Copilot says this is based on https://stackoverflow.com/a/41698847, I'm not so sure about that
+export function normalizeNewlines(str: string) {
+    return str.replace(/\r\n|\r|\n/g, "\r\n");
+}
+
 /**
  * Normalize a data array to load into the spreadsheet component
  * @param data A data array to normalize

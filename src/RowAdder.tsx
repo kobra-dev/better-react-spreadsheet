@@ -1,7 +1,7 @@
 import { Button, InputBase, makeStyles } from "@material-ui/core";
 import React, { CSSProperties, useContext, useState } from "react";
 import { CELL_UNIT_HEIGHT, CELL_BORDER_COLOR } from "./Cell";
-import { DataContext, ID_BASE, SetDataContext, TableIdContext } from "./state";
+import { ID_BASE, TableIdContext, useData, useSetData } from "./state";
 
 const useStyles = makeStyles((theme) => ({
     wrapper: {
@@ -33,8 +33,8 @@ const useStyles = makeStyles((theme) => ({
 export default function RowAdder(props: { style: CSSProperties }) {
     const styles = useStyles();
     const [fieldValue, setFieldValue] = useState("10");
-    const data = useContext(DataContext);
-    const setData = useContext(SetDataContext);
+    const data = useData();
+    const { setData } = useSetData();
     const tableId = useContext(TableIdContext);
 
     function addRows() {
