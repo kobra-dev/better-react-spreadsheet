@@ -111,103 +111,121 @@ export default function KeyHandlers(props: TableContainerProps) {
                 }
             }
         } else {
-            switch (e.key) {
-                case "Escape": {
-                    preventDefault = false;
-                    setCopySelection(undefined);
-                    setLastCut(undefined);
-                    break;
-                }
-                case "Enter": {
-                    enterEditing();
+            const _default = () => {
+                preventDefault = false;
+                if (e.key.length === 1 && !e.ctrlKey) {
+                    // It's probably a letter key
+                    enterEditing("");
                     clearDragSelection = true;
-                    break;
                 }
-                // TODO: accessibility
-                case "Tab": {
-                    if (e.shiftKey) {
-                        arrowLeft();
-                    } else {
-                        arrowRight();
+            };
+            if(e.ctrlKey) {
+                switch (e.key) {
+                    case "a": {
+                        // Select all
+                        setDragSelection([[data.length - 1, data[0].length - 1], [0, 0]]);
+                        break;
                     }
-                    clearDragSelection = true;
-                    break;
-                }
-                case "Delete":
-                case "Backspace": {
-                    backspace();
-                    break;
-                }
-                case "ArrowLeft": {
-                    if(e.shiftKey) {
-                        if(!dragSelection && selected[1] > 0) {
-                            setDragSelection([selected, [selected[0], selected[1] - 1]]);
-                        }
-                        else if(dragSelection && dragSelection[1][1] > 0) {
-                            setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] - 1]]);
-                        }
+                    default: {
+                        _default();
+                        break;
                     }
-                    else {
-                        arrowLeft();
+                }
+            }
+            else {
+                switch (e.key) {
+                    case "Escape": {
+                        preventDefault = false;
+                        setCopySelection(undefined);
+                        setLastCut(undefined);
+                        break;
+                    }
+                    case "Enter": {
+                        enterEditing();
                         clearDragSelection = true;
+                        break;
                     }
-                    break;
-                }
-                case "ArrowRight": {
-                    if(e.shiftKey) {
-                        if(!dragSelection && selected[1] < data[0].length - 1) {
-                            setDragSelection([selected, [selected[0], selected[1] + 1]]);
-                        }
-                        else if(dragSelection && dragSelection[1][1] < data[0].length - 1) {
-                            setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] + 1]]);
-                        }
-                    }
-                    else {
-                        arrowRight();
-                        clearDragSelection = true;    
-                    }
-                    break;
-                }
-                case "ArrowUp": {
-                    if(e.shiftKey) {
-                        if(!dragSelection && selected[0] > 0) {
-                            setDragSelection([selected, [selected[0] - 1, selected[1]]]);
-                        }
-                        else if(dragSelection && dragSelection[1][0] > 0) {
-                            setDragSelection([dragSelection[0], [dragSelection[1][0] - 1, dragSelection[1][1]]]);
-                        }
-                    }
-                    else {
-                        if (selected[0] > 0) {
-                            setSelected([selected[0] - 1, selected[1]]);
+                    // TODO: accessibility
+                    case "Tab": {
+                        if (e.shiftKey) {
+                            arrowLeft();
+                        } else {
+                            arrowRight();
                         }
                         clearDragSelection = true;
+                        break;
                     }
-                    break;
-                }
-                case "ArrowDown": {
-                    if(e.shiftKey) {
-                        if(!dragSelection && selected[0] < data.length - 1) {
-                            setDragSelection([selected, [selected[0] + 1, selected[1]]]);
+                    case "Delete":
+                    case "Backspace": {
+                        backspace();
+                        break;
+                    }
+                    case "ArrowLeft": {
+                        if(e.shiftKey) {
+                            if(!dragSelection && selected[1] > 0) {
+                                setDragSelection([selected, [selected[0], selected[1] - 1]]);
+                            }
+                            else if(dragSelection && dragSelection[1][1] > 0) {
+                                setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] - 1]]);
+                            }
                         }
-                        else if(dragSelection && dragSelection[1][0] < data.length - 1) {
-                            setDragSelection([dragSelection[0], [dragSelection[1][0] + 1, dragSelection[1][1]]]);
+                        else {
+                            arrowLeft();
+                            clearDragSelection = true;
                         }
+                        break;
                     }
-                    else {
-                        arrowDown();
-                        clearDragSelection = true;    
+                    case "ArrowRight": {
+                        if(e.shiftKey) {
+                            if(!dragSelection && selected[1] < data[0].length - 1) {
+                                setDragSelection([selected, [selected[0], selected[1] + 1]]);
+                            }
+                            else if(dragSelection && dragSelection[1][1] < data[0].length - 1) {
+                                setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] + 1]]);
+                            }
+                        }
+                        else {
+                            arrowRight();
+                            clearDragSelection = true;    
+                        }
+                        break;
                     }
-                    break;
-                }
-                default: {
-                    preventDefault = false;
-                    if (e.key.length === 1 && !e.ctrlKey) {
-                        // It's probably a letter key
-                        enterEditing("");
-                        clearDragSelection = true;
+                    case "ArrowUp": {
+                        if(e.shiftKey) {
+                            if(!dragSelection && selected[0] > 0) {
+                                setDragSelection([selected, [selected[0] - 1, selected[1]]]);
+                            }
+                            else if(dragSelection && dragSelection[1][0] > 0) {
+                                setDragSelection([dragSelection[0], [dragSelection[1][0] - 1, dragSelection[1][1]]]);
+                            }
+                        }
+                        else {
+                            if (selected[0] > 0) {
+                                setSelected([selected[0] - 1, selected[1]]);
+                            }
+                            clearDragSelection = true;
+                        }
+                        break;
                     }
-                    break;
+                    case "ArrowDown": {
+                        if(e.shiftKey) {
+                            if(!dragSelection && selected[0] < data.length - 1) {
+                                setDragSelection([selected, [selected[0] + 1, selected[1]]]);
+                            }
+                            else if(dragSelection && dragSelection[1][0] < data.length - 1) {
+                                setDragSelection([dragSelection[0], [dragSelection[1][0] + 1, dragSelection[1][1]]]);
+                            }
+                        }
+                        else {
+                            arrowDown();
+                            clearDragSelection = true;    
+                        }
+                        break;
+                    }
+                    default: {
+                        _default();
+                        break;
+                    }
                 }
             }
         }
