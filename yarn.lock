@@ -9234,6 +9234,11 @@ nice-try@^1.0.4:
   resolved "https://registry.yarnpkg.com/nice-try/-/nice-try-1.0.5.tgz#a3378a7696ce7d223e88fc9b764bd7ef1089e366"
   integrity sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==
 
+niue@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/niue/-/niue-0.1.1.tgz#32d5a070737927f850cbbfc3ff4dd611a6969d8d"
+  integrity sha512-ieKGmy41caH0QSMQeduHD22LS3O3g1amkdh8s9AWtu/6PxvXyYJRgczJjYveAQb4LS+/ZG90DHQdlXF0PvjTIw==
+
 no-case@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-3.0.4.tgz#d361fd5c9800f558551a8369fc0dcd4662b6124d"

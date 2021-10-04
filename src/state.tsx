@@ -1,52 +1,61 @@
 import React, { useContext } from "react";
+import { createState, createEvent, useRerender } from "niue";
 import { CELL_UNIT_WIDTH } from "./Cell";
 import type {
     Coords,
     Editing
 } from "./Spreadsheet";
 
-type StateSet<T> = React.Dispatch<React.SetStateAction<T>>;
+const niueStore = createState<{
+    selected: Coords,
+    editing: Editing | undefined,
+    editorValue: string
+    dragSelection: DragSelection,
+    isDragging: boolean,
+    copySelection: DragSelection,
+    dataRerender: boolean
+}>({
+    selected: [0, 0],
+    editing: undefined,
+    editorValue: "",
+    dragSelection: undefined,
+    isDragging: false,
+    copySelection: undefined,
+    dataRerender: false
+});
+
+export const useStore = niueStore[0];
+export const setState = niueStore[1];
+
 export type Data = string[][];
-const empty = () => {};
 
 // Always use useData so that components will rerender when dataHasChanged in the useSetData hook is called
 export const _DONT_USE_DIRECTLY_DataContext = React.createContext<Data>([]);
-export const SetDataContext = React.createContext<StateSet<Data>>(empty);
-export const DataRerenderContext = React.createContext(false);
-export const SetDataRerenderContext = React.createContext<StateSet<boolean>>(empty);
+
+const [useOnDataRerender, emitDataRerender] = createEvent<void>();
 
 export function useData() {
-    useContext(DataRerenderContext);
+    const rerender = useRerender();
+    useOnDataRerender(() => {
+        rerender();
+    }, []);
     return useContext(_DONT_USE_DIRECTLY_DataContext);
 }
 
-export function useSetData() {
-    const setDataRerender = useContext(SetDataRerenderContext);
+const setDataEvent = createEvent<Data>();
 
+export const useOnSetData = setDataEvent[0];
+
+export function useSetData() {
     return {
-        setData: useContext(SetDataContext),
+        setData: setDataEvent[1],
         // React can't detect changes to the contents of the data array, so call dataHasChanged after you're done to avoid slicing the array, editing it, then calling setData
-        dataHasChanged: () => setDataRerender(p => !p)
+        dataHasChanged: () => emitDataRerender()
     };
 }
 
-export const SelectedContext = React.createContext<Coords>([0, 0]);
-export const SetSelectedContext = React.createContext<StateSet<Coords>>(empty);
-export const EditingContext =
-    React.createContext<Editing | undefined>(undefined);
-export const SetEditingContext =
-    React.createContext<StateSet<Editing | undefined>>(empty);
-export const EditorValueContext = React.createContext("");
-export const SetEditorValueContext =
-    React.createContext<StateSet<string>>(empty);
 export const TableIdContext = React.createContext<number>(0);
 export type DragSelection = [Coords, Coords] | undefined;
-export const DragSelectionContext = React.createContext<DragSelection>(undefined);
-export const SetDragSelectionContext = React.createContext<StateSet<DragSelection>>(empty);
-export const IsDraggingContext = React.createContext(false);
-export const SetIsDraggingContext = React.createContext<StateSet<boolean>>(empty);
-export const CopySelectionContext = React.createContext<DragSelection>(undefined);
-export const SetCopySelectionContext = React.createContext<StateSet<DragSelection>>(empty);
 
 type StateProviderItem<T> = [React.Context<T>, T];
 
@@ -96,38 +105,32 @@ export function useGetCellId() {
 }
 
 export function useEnterEditing() {
-    const setEditorValue = useContext(SetEditorValueContext);
-    const setEditing = useContext(SetEditingContext);
+    const { selected } = useStore(["selected"]);
     const data = useData();
-    const selected = useContext(SelectedContext);
     const getCellId = useGetCellId();
 
     return (newValue?: string) => {
         // Edit current cell, this is a bit different than
         // how it is done when the cell is double-clicked
         // because we don't have access to the event handler
-        setEditorValue(newValue ?? data[selected[0]][selected[1]]);
-        setEditing({
+        setState({ editorValue: newValue ?? data[selected[0]][selected[1]], editing: {
             c: selected,
             w:
                 document.getElementById(getCellId(...selected))?.offsetWidth ??
                 CELL_UNIT_WIDTH
-        });
+        } });
     };
 }
 
 export function useExitEditing() {
-    const editing = useContext(EditingContext);
-    const setEditing = useContext(SetEditingContext);
+    const { editing, selected, editorValue } = useStore(["editing", "selected", "editorValue"]);
     const data = useData();
-    const selected = useContext(SelectedContext);
-    const editorValue = useContext(EditorValueContext);
     const { dataHasChanged } = useSetData();
 
     return () => {
         if(!editing) return;
         data[selected[0]][selected[1]] = editorValue;
         dataHasChanged();
-        setEditing(undefined);
+        setState({ editing: undefined });
     };
 }

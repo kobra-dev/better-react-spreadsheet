@@ -1,18 +1,11 @@
 import { InputBase, makeStyles, TableCell, Theme } from "@material-ui/core";
-import React, { CSSProperties, useContext } from "react";
+import React, { CSSProperties } from "react";
 import {
-    DragSelectionContext,
-    EditingContext,
-    EditorValueContext,
-    IsDraggingContext,
-    SelectedContext,
-    SetDragSelectionContext,
-    SetEditorValueContext,
-    SetIsDraggingContext,
-    SetSelectedContext,
+    setState,
     useEnterEditing,
     useExitEditing,
-    useGetCellId
+    useGetCellId,
+    useStore
 } from "./state";
 import {
     cellStyles,
@@ -76,9 +69,7 @@ const useEditorStyles = makeStyles<Theme, { editingWidth: number }>(
 // Separate function to only call useContext when necessary
 function CellEditor(props: { style: CSSProperties }) {
     const styles = useStyles();
-    const editorValue = useContext(EditorValueContext);
-    const setEditorValue = useContext(SetEditorValueContext);
-    const editing = useContext(EditingContext);
+    const { editorValue, editing } = useStore(["editorValue", "editing"]);
     const editorStyles = useEditorStyles({ editingWidth: editing?.w ?? 0 });
 
     return (
@@ -96,7 +87,7 @@ function CellEditor(props: { style: CSSProperties }) {
                 className={editorStyles.cellEditorInput}
                 value={editorValue}
                 onChange={(e) => {
-                    setEditorValue(e.target.value);
+                    setState({ editorValue: e.target.value });
                 }}
                 autoFocus
             />
@@ -111,18 +102,12 @@ export default function DataCellRenderer(props: {
     col: number;
     isScrolling: boolean;
 }) {
+    const { editing, selected, dragSelection, isDragging } = useStore(["editing", "selected", "dragSelection", "isDragging"]);
     const { style, item, row, col, isScrolling } = props;
     const styles = useStyles();
     const enterEditing = useEnterEditing();
     const exitEditing = useExitEditing();
-    const editing = useContext(EditingContext);
-    const selected = useContext(SelectedContext);
-    const setSelected = useContext(SetSelectedContext);
     const getCellId = useGetCellId();
-    const dragSelection = useContext(DragSelectionContext);
-    const setDragSelection = useContext(SetDragSelectionContext);
-    const isDragging = useContext(IsDraggingContext);
-    const setIsDragging = useContext(SetIsDraggingContext);
 
     const thisIs = (a: number[] | undefined) =>
         a && a[0] === row && a[1] === col;
@@ -140,11 +125,11 @@ export default function DataCellRenderer(props: {
               >
           ) => {
               // e.detail is the number of clicks (2 is double click)
-              setDragSelection(undefined);
+              setState({ dragSelection: undefined });
               switch (e.detail) {
                   case 1: {
                       exitEditing();
-                      setSelected([row, col]);
+                      setState({ selected: [row, col] });
                       break;
                   }
                   case 2: {
@@ -174,16 +159,15 @@ export default function DataCellRenderer(props: {
                         onMouseMove={(e) => {
                             if(e.buttons === 1 && (!isDragging || !dragSelection || (dragSelection[1][0] !== row || dragSelection[1][1] !== col))) {
                                 if(!isDragging) {
-                                    setIsDragging(true);
-                                    setSelected([row, col]);
+                                    exitEditing();
+                                    setState({ isDragging: true, selected: [row, col] });
                                 }
-                                setDragSelection([(isDragging ? dragSelection?.[0] : undefined) ?? [row, col], [row, col]]);
+                                setState({ dragSelection: [(isDragging ? dragSelection?.[0] : undefined) ?? [row, col], [row, col]] });
                             }
                         }}
                         onMouseUp={() => {
                             if(isDragging) {
-                                setDragSelection([dragSelection?.[0] ?? [row, col], [row, col]]);
-                                setIsDragging(false);
+                                setState({ dragSelection: [dragSelection?.[0] ?? [row, col], [row, col]], isDragging: false });
                             }
                         }}
                     />

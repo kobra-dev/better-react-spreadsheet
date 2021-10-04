@@ -1,9 +1,9 @@
 import { makeStyles } from "@material-ui/core";
 import type { CSSProperties } from "@material-ui/core/styles/withStyles";
-import React, { useContext } from "react";
+import React from "react";
 import { CELL_UNIT_HEIGHT, CELL_UNIT_WIDTH } from "./Cell";
 import type { Coords } from "./Spreadsheet";
-import { DragSelection, DragSelectionContext } from "./state";
+import { DragSelection, useStore } from "./state";
 
 export const indicatorStyles: {(selection: [Coords, Coords]): CSSProperties} = (selection) => ({
     position: "absolute",
@@ -45,7 +45,7 @@ export function dragSelectionToRect(ds: [Coords, Coords]): [Coords, Coords] {
 }
 
 export default function DragIndicator() {
-    const dragSelection = useContext(DragSelectionContext);
+    const { dragSelection } = useStore(["dragSelection"]);
     const styles = useStyles({
         dragSelection: dragSelection && dragSelectionToRect(dragSelection)
     });

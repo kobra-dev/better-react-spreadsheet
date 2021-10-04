@@ -1,10 +1,10 @@
 import { makeStyles, TableCell, Theme } from "@material-ui/core";
 import type { CSSProperties as MuiCSSProperties } from "@material-ui/styles";
-import React, { CSSProperties, useContext, useMemo } from "react";
+import React, { CSSProperties, useMemo } from "react";
 import type { GridChildComponentProps } from "react-window";
 import DataCellRenderer from "./DataCell";
 import RowAdder from "./RowAdder";
-import { SelectedContext, useData } from "./state";
+import { useData, useStore } from "./state";
 
 export const CELL_BORDER_COLOR = (theme: Theme) => theme.palette.type === "dark" ? "#4d5155" : "rgb(231, 231, 231)";
 
@@ -67,7 +67,7 @@ export default function CellRenderer({
     isScrolling,
     data: nRows
 }: GridChildComponentProps<number>) {
-    const selected = useContext(SelectedContext);
+    const { selected } = useStore(["selected"]);
     const styles = useStyles();
 
     const headerCell = (selected: boolean) =>
@@ -126,7 +126,7 @@ function DataCellWrapper({
     isScrolling: boolean | undefined;
 }) {
     const data = useData();
-    const selected = useContext(SelectedContext);
+    const { selected } = useStore(["selected"]);
     const isSelected = selected[0] === row && selected[1] === col;
 
     const processedStyles = useMemo(() => {

@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
-import React, { useContext } from "react";
+import React from "react";
 import { indicatorStyles } from "./DragIndicator";
-import { CopySelectionContext, DragSelection } from "./state";
+import { DragSelection, useStore } from "./state";
 
 const strokePlaceholder = "STROKE";
 
@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CopyIndicator() {
-    const copySelection = useContext(CopySelectionContext);
+    const { copySelection } = useStore(["copySelection"]);
     const styles = useStyles({ copySelection });
 
     return copySelection ? <div className={styles.root} /> : null;

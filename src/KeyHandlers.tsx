@@ -3,25 +3,18 @@ import type { DefaultComponentProps } from "@material-ui/core/OverridableCompone
 import React, { useContext, useRef, useState } from "react";
 import Papa from "papaparse";
 import { dragSelectionToRect } from "./DragIndicator";
-import { CopySelectionContext, Data, DragSelectionContext, EditingContext, ID_BASE, SelectedContext, SetCopySelectionContext, SetDragSelectionContext, SetEditingContext, SetSelectedContext, TableIdContext, useData, useEnterEditing, useExitEditing, useSetData } from "./state";
+import { Data, ID_BASE, setState, TableIdContext, useData, useEnterEditing, useExitEditing, useSetData, useStore } from "./state";
 import { normalizeNewlines } from "./utils";
 
 type TableContainerProps = DefaultComponentProps<TableContainerTypeMap<{}, "div">>;
 
 export default function KeyHandlers(props: TableContainerProps) {
-    const selected = useContext(SelectedContext);
-    const setSelected = useContext(SetSelectedContext);
+    const { selected, editing, dragSelection, copySelection } = useStore(["selected", "editing", "dragSelection", "copySelection"]);
     const data = useData();
     const { dataHasChanged } = useSetData();
-    const editing = useContext(EditingContext);
-    const setEditing = useContext(SetEditingContext);
     const enterEditing = useEnterEditing();
     const exitEditing = useExitEditing();
     const tableId = useContext(TableIdContext);
-    const dragSelection = useContext(DragSelectionContext);
-    const setDragSelection = useContext(SetDragSelectionContext);
-    const copySelection = useContext(CopySelectionContext);
-    const setCopySelection = useContext(SetCopySelectionContext);
 
     const [lastCut, setLastCut] = useState<string | undefined>();
 
@@ -30,19 +23,19 @@ export default function KeyHandlers(props: TableContainerProps) {
     // Separate functions so they can be called from multiple key press handlers
     const arrowDown = () => {
         if (selected[0] < data.length - 1) {
-            setSelected([selected[0] + 1, selected[1]]);
+            setState({ selected: [selected[0] + 1, selected[1]] });
         }
     };
 
     const arrowLeft = () => {
         if (selected[1] > 0) {
-            setSelected([selected[0], selected[1] - 1]);
+            setState({ selected: [selected[0], selected[1] - 1] });
         }
     };
 
     const arrowRight = () => {
         if (selected[1] < data[0].length - 1) {
-            setSelected([selected[0], selected[1] + 1]);
+            setState({ selected: [selected[0], selected[1] + 1] });
         }
     };
 
@@ -66,11 +59,11 @@ export default function KeyHandlers(props: TableContainerProps) {
         if(dragSelection) {
             const rect = dragSelectionToRect(dragSelection);
             copyData = data.slice(rect[0][0], rect[1][0] + 1).map(row => row.slice(rect[0][1], rect[1][1] + 1));
-            setCopySelection(rect);
+            setState({ copySelection: rect });
         }
         else {
             copyData = [[ data[selected[0]][selected[1]] ]];
-            setCopySelection([selected, selected]);
+            setState({ copySelection: [selected, selected] });
         }
 
         return Papa.unparse(copyData, { delimiter: "\t" });
@@ -102,7 +95,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                 }
                 case "Escape": {
                     // Don't save the new value
-                    setEditing(undefined);
+                    setState({ editing: undefined });
                     tableContainerRef.current?.focus();
                     break;
                 }
@@ -123,7 +116,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                 switch (e.key) {
                     case "a": {
                         // Select all
-                        setDragSelection([[data.length - 1, data[0].length - 1], [0, 0]]);
+                        setState({ dragSelection: [[data.length - 1, data[0].length - 1], [0, 0]] });
                         break;
                     }
                     default: {
@@ -136,7 +129,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                 switch (e.key) {
                     case "Escape": {
                         preventDefault = false;
-                        setCopySelection(undefined);
+                        setState({ copySelection: undefined });
                         setLastCut(undefined);
                         break;
                     }
@@ -163,10 +156,10 @@ export default function KeyHandlers(props: TableContainerProps) {
                     case "ArrowLeft": {
                         if(e.shiftKey) {
                             if(!dragSelection && selected[1] > 0) {
-                                setDragSelection([selected, [selected[0], selected[1] - 1]]);
+                                setState({ dragSelection: [selected, [selected[0], selected[1] - 1]] });
                             }
                             else if(dragSelection && dragSelection[1][1] > 0) {
-                                setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] - 1]]);
+                                setState({ dragSelection: [dragSelection[0], [dragSelection[1][0], dragSelection[1][1] - 1]] });
                             }
                         }
                         else {
@@ -178,10 +171,10 @@ export default function KeyHandlers(props: TableContainerProps) {
                     case "ArrowRight": {
                         if(e.shiftKey) {
                             if(!dragSelection && selected[1] < data[0].length - 1) {
-                                setDragSelection([selected, [selected[0], selected[1] + 1]]);
+                                setState({ dragSelection: [selected, [selected[0], selected[1] + 1]] });
                             }
                             else if(dragSelection && dragSelection[1][1] < data[0].length - 1) {
-                                setDragSelection([dragSelection[0], [dragSelection[1][0], dragSelection[1][1] + 1]]);
+                                setState({ dragSelection: [dragSelection[0], [dragSelection[1][0], dragSelection[1][1] + 1]] });
                             }
                         }
                         else {
@@ -193,15 +186,15 @@ export default function KeyHandlers(props: TableContainerProps) {
                     case "ArrowUp": {
                         if(e.shiftKey) {
                             if(!dragSelection && selected[0] > 0) {
-                                setDragSelection([selected, [selected[0] - 1, selected[1]]]);
+                                setState({ dragSelection: [selected, [selected[0] - 1, selected[1]]] });
                             }
                             else if(dragSelection && dragSelection[1][0] > 0) {
-                                setDragSelection([dragSelection[0], [dragSelection[1][0] - 1, dragSelection[1][1]]]);
+                                setState({ dragSelection: [dragSelection[0], [dragSelection[1][0] - 1, dragSelection[1][1]]] });
                             }
                         }
                         else {
                             if (selected[0] > 0) {
-                                setSelected([selected[0] - 1, selected[1]]);
+                                setState({ selected: [selected[0] - 1, selected[1]] });
                             }
                             clearDragSelection = true;
                         }
@@ -210,10 +203,10 @@ export default function KeyHandlers(props: TableContainerProps) {
                     case "ArrowDown": {
                         if(e.shiftKey) {
                             if(!dragSelection && selected[0] < data.length - 1) {
-                                setDragSelection([selected, [selected[0] + 1, selected[1]]]);
+                                setState({ dragSelection: [selected, [selected[0] + 1, selected[1]]] });
                             }
                             else if(dragSelection && dragSelection[1][0] < data.length - 1) {
-                                setDragSelection([dragSelection[0], [dragSelection[1][0] + 1, dragSelection[1][1]]]);
+                                setState({ dragSelection: [dragSelection[0], [dragSelection[1][0] + 1, dragSelection[1][1]]] });
                             }
                         }
                         else {
@@ -234,7 +227,7 @@ export default function KeyHandlers(props: TableContainerProps) {
             e.preventDefault();
         }
         if(clearDragSelection) {
-            setDragSelection(undefined);
+            setState({ dragSelection: undefined });
         }
     }
 
@@ -309,7 +302,7 @@ export default function KeyHandlers(props: TableContainerProps) {
                 }
             }
 
-            setCopySelection(undefined);
+            setState({ copySelection: undefined });
             dataHasChanged();
         }
     };

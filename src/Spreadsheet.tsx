@@ -2,30 +2,17 @@ import { Table, makeStyles } from "@material-ui/core";
 import type { FixedSizeGrid } from "react-window";
 import AutoSizer from "react-virtualized-auto-sizer";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { GridWithStickyCells } from "./GridWithStickyCells";
 import {
-    CopySelectionContext,
     _DONT_USE_DIRECTLY_DataContext,
-    DataRerenderContext,
-    DragSelection,
-    DragSelectionContext,
-    EditingContext,
-    EditorValueContext,
     getCellIdTableId,
     ID_BASE,
-    IsDraggingContext,
-    SelectedContext,
-    SetCopySelectionContext,
-    SetDataContext,
-    SetDataRerenderContext,
-    SetDragSelectionContext,
-    SetEditingContext,
-    SetEditorValueContext,
-    SetIsDraggingContext,
-    SetSelectedContext,
     StateProvider,
-    TableIdContext
+    TableIdContext,
+    useStore,
+    setState,
+    useOnSetData
 } from "./state";
 import KeyHandlers from "./KeyHandlers";
 import CellRenderer, { CELL_UNIT_HEIGHT, CELL_UNIT_WIDTH, HEADER_CELL_BG } from "./Cell";
@@ -58,18 +45,12 @@ export interface SpreadsheetProps {
 }
 
 export default function Spreadsheet(props: SpreadsheetProps) {
+    const { selected, dragSelection } = useStore(["selected", "dragSelection"]);
     const [tableId] = useState(() => {
         globalThis._better_react_spreadsheet_counter++;
         return globalThis._better_react_spreadsheet_counter;
     });
     const windowRef = useRef<FixedSizeGrid<string[][]>>(null);
-    const [selected, setSelected_state] = useState<Coords>([0, 0]);
-    const [editing, setEditing] = useState<Editing | undefined>(undefined);
-    const [editorValue, setEditorValue] = useState("");
-    const [dragSelection, setDragSelection] = useState<DragSelection>(undefined);
-    const [isDragging, setIsDragging] = useState(false);
-    const [copySelection, setCopySelection] = useState<DragSelection>(undefined);
-    const [dataRerender, setDataRerender] = useState(false);
 
     const styles = useStyles();
 
@@ -111,39 +92,38 @@ export default function Spreadsheet(props: SpreadsheetProps) {
         }
     }
 
-    const setSelected = useCallback(
+    /*const setSelected = useCallback(
         (c: Coords) => {
             setSelected_state(c);
             scrollTo(c);
         },
         [setSelected_state, windowRef, selected]
-    );
+    );*/
+
+    const [firstRender, setFirstRender] = useState(true);
+
+    useEffect(() => {
+        if(firstRender) {
+            setFirstRender(false);
+        }
+        else {
+            setState({ selected });
+            scrollTo(selected);    
+        }
+    }, [selected]);
 
     useEffect(() => {
         if(dragSelection)
             scrollTo(dragSelection[1]);
     }, [dragSelection?.[1][0], dragSelection?.[1][1]]);
 
+    useOnSetData(props.onChange, [props.onChange]);
+
     return (
         <StateProvider
             contexts={[
                 [_DONT_USE_DIRECTLY_DataContext, props.data],
-                [SetDataContext, props.onChange],
-                [SelectedContext, selected],
-                [SetSelectedContext, setSelected],
-                [EditingContext, editing],
-                [SetEditingContext, setEditing],
-                [EditorValueContext, editorValue],
-                [SetEditorValueContext, setEditorValue],
-                [TableIdContext, tableId],
-                [DragSelectionContext, dragSelection],
-                [SetDragSelectionContext, setDragSelection],
-                [IsDraggingContext, isDragging],
-                [SetIsDraggingContext, setIsDragging],
-                [CopySelectionContext, copySelection],
-                [SetCopySelectionContext, setCopySelection],
-                [DataRerenderContext, dataRerender],
-                [SetDataRerenderContext, setDataRerender]
+                [TableIdContext, tableId]
             ]}
         >
             <KeyHandlers

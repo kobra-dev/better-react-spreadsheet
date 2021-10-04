@@ -59,10 +59,12 @@ const getMuiTheme = (isDark: boolean) =>
 const Template: Story<SpreadsheetStoryProps> = (args) => {
     const styles = useStyles(args);
     const [data, setData] = useState(() => normalizeRows([], 20, 20));
+    const [data2, setData2] = useState(() => normalizeRows([], 20, 20));
 
     return (
         <ThemeProvider theme={getMuiTheme(args.darkTheme)}>
             <Spreadsheet className={styles.spreadsheet} data={data} onChange={setData} />
+            <Spreadsheet className={styles.spreadsheet} data={data2} onChange={setData2} />
         </ThemeProvider>
     );
 };
